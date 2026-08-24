@@ -1,0 +1,42 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+build/
+
+# Environment files (secrets)
+.env
+.env.local
+.env.production
+!.env.example
+
+# Logs
+*.log
+server_test.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Uploads (user-generated content)
+uploads/
+public/uploads/
+!public/uploads/.gitkeep
+!uploads/.gitkeep
+
+# Temp files
+temp_*.txt
+*.tmp
+
+# Coverage
+coverage/
+
+# Screenshots
+*.png
+!public/logo.png
+!public/logo-dark.png

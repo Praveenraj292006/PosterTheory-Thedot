@@ -1,0 +1,115 @@
+============================================================
+POSTER THEORY — CLOUDINARY FOLDER STRUCTURE
+============================================================
+
+Root: poster-theory/
+
+├── products/                    ← Product poster images
+│   ├── anime/
+│   ├── movies/
+│   ├── music/
+│   ├── minimal/
+│   ├── typography/
+│   ├── abstract/
+│   ├── vintage/
+│   ├── photography/
+│   ├── gaming/
+│   ├── sports/
+│   ├── devotional/
+│   ├── series/
+│   └── {new-collection-slug}/   ← Auto-created when admin adds collections
+│
+├── custom/                      ← User-uploaded custom poster images
+│   └── {user-id}/              ← Per-user folder (e.g. custom/42/)
+│
+└── homepage/                    ← Homepage CMS images
+    ├── hero_images/
+    ├── collection_images/
+    └── about_image/
+
+
+============================================================
+CLEANUP INSTRUCTIONS
+============================================================
+
+To fully clear Cloudinary storage for a fresh start:
+
+Option 1: Cloudinary Dashboard (Recommended)
+---------------------------------------------
+1. Go to https://console.cloudinary.com
+2. Navigate to Media Library → poster-theory/
+3. Select all → Delete
+4. The server will auto-recreate folder structure on next startup
+
+Option 2: Cloudinary CLI
+---------------------------------------------
+# Install: npm install -g cloudinary-cli
+# Configure: cld config -url cloudinary://<API_KEY>:<API_SECRET>@<CLOUD_NAME>
+
+# Delete all resources in the root folder recursively
+cld admin delete_resources_by_prefix "poster-theory/" --resource_type image
+cld admin delete_folder "poster-theory"
+
+Option 3: Node.js Script (run once)
+---------------------------------------------
+// Save as cleanup_cloudinary.mjs and run: node --env-file=.env cleanup_cloudinary.mjs
+
+import { v2 as cloudinary } from 'cloudinary';
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+async function cleanup() {
+  console.log('Deleting all resources under poster-theory/...');
+  try {
+    await cloudinary.api.delete_resources_by_prefix('poster-theory/');
+  } catch (e) { console.log('No resources to delete or partial cleanup:', e.message); }
+
+  // Delete subfolders bottom-up
+  const subfolders = [
+    'poster-theory/products/anime',
+    'poster-theory/products/movies',
+    'poster-theory/products/music',
+    'poster-theory/products/minimal',
+    'poster-theory/products/typography',
+    'poster-theory/products/abstract',
+    'poster-theory/products/vintage',
+    'poster-theory/products/photography',
+    'poster-theory/products/gaming',
+    'poster-theory/products/sports',
+    'poster-theory/products/devotional',
+    'poster-theory/products/series',
+    'poster-theory/products',
+    'poster-theory/custom',
+    'poster-theory/homepage/hero_images',
+    'poster-theory/homepage/collection_images',
+    'poster-theory/homepage/about_image',
+    'poster-theory/homepage',
+    'poster-theory',
+  ];
+
+  for (const folder of subfolders) {
+    try {
+      await cloudinary.api.delete_folder(folder);
+      console.log(`  Deleted: ${folder}`);
+    } catch (e) { /* folder may not exist or not empty */ }
+  }
+
+  console.log('Done. Restart server to recreate folders.');
+}
+
+cleanup();
+
+
+============================================================
+NOTES
+============================================================
+
+- The server auto-creates all required folders on startup via initStorage()
+- Product images use auto quality + format transforms on upload
+- Custom user uploads go to poster-theory/custom/{userId}/
+- Admin can only delete images they own (unless is_admin=true)
+- Cloudinary free tier: 25GB storage, 25GB bandwidth/month

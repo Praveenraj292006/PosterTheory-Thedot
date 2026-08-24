@@ -1,0 +1,135 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Space Grotesk", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+
+  --color-z-paper: #FFFFFF;
+  --color-z-ink: #000000;
+  --color-z-accent: #000000;
+  --color-z-border: #000000;
+  --color-z-muted: #888888;
+  --color-z-white: #FFFFFF;
+  --color-z-shadow: rgba(0,0,0,1);
+  --color-z-orange: #F97316;
+  --color-z-orange-dark: #EA580C;
+  --color-z-label: #888888;
+}
+
+@layer base {
+  :root.dark {
+    --color-z-paper: #000000;
+    --color-z-ink: #FFFFFF;
+    --color-z-accent: #FFFFFF;
+    --color-z-border: #FFFFFF;
+    --color-z-muted: #AAAAAA;
+    --color-z-white: #000000;
+    --color-z-shadow: rgba(255,255,255,0.2);
+    --color-z-orange: #FB923C;
+    --color-z-orange-dark: #F97316;
+    --color-z-label: #CCCCCC;
+  }
+
+  body {
+    @apply bg-z-paper text-z-ink antialiased selection:bg-z-ink selection:text-z-paper transition-colors duration-300;
+    font-feature-settings: "ss01", "ss02", "cv01", "cv02";
+    background-size: 40px 40px;
+    background-image: 
+      linear-gradient(to right, rgba(0, 0, 0, 0.12) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(0, 0, 0, 0.12) 1px, transparent 1px);
+  }
+
+  :root.dark body {
+    background-image: 
+      linear-gradient(to right, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+  }
+}
+
+.text-outline {
+  -webkit-text-fill-color: transparent;
+  -webkit-text-stroke: 1px currentColor;
+}
+
+.polaroid {
+  @apply bg-z-paper p-1 border-[1px] border-z-border shadow-[4px_4px_0px_0px_var(--color-z-shadow)] transition-all duration-300;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.polaroid:hover {
+  @apply shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] -translate-y-0.5;
+}
+
+.poster-title {
+  @apply font-display font-bold uppercase tracking-tighter leading-[0.85] text-[clamp(3rem,12vw,12rem)];
+}
+
+.sticker-btn {
+  @apply bg-z-ink text-z-paper px-6 py-3 font-display font-bold uppercase tracking-widest border-2 border-z-border shadow-[4px_4px_0px_0px_var(--color-z-shadow)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all;
+}
+
+.tape {
+  @apply absolute h-10 w-32 bg-white/40 backdrop-blur-sm -rotate-12 pointer-events-none z-10 opacity-70;
+  mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+}
+
+.animate-marquee {
+  display: flex;
+  animation: marquee 30s linear infinite;
+}
+
+.animate-marquee-scroll {
+  animation: marquee-scroll 40s linear infinite;
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes marquee-scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes slide-up {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+.animate-slide-up {
+  animation: slide-up 0.3s ease-out;
+}
+
+/* Section label text — brighter and slightly larger in dark mode */
+.section-label {
+  @apply text-[11px] font-mono uppercase font-black text-z-label;
+  letter-spacing: 0.3em;
+}
+
+:root.dark .section-label {
+  font-size: 12px;
+}
+
+/* Date inputs — dark mode support */
+input[type="date"] {
+  color-scheme: light;
+}
+
+:root.dark input[type="date"] {
+  color-scheme: dark;
+}
+
+/* All mono uppercase tracking labels get a slight bump in dark mode */
+:root.dark .font-mono[class*="uppercase"][class*="tracking-"] {
+  color: var(--color-z-muted);
+}
