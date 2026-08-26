@@ -1,8 +1,8 @@
-﻿import React, { useState } from 'react';
-import { motion } from 'motion/react';
-import { ArrowRight } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import ProductModal from './ProductModal';
+﻿import React, { useState } from "react";
+import { motion } from "motion/react";
+import { ArrowRight, Heart, ShoppingBag, Eye } from "lucide-react";
+import { Link } from "react-router-dom";
+import ProductModal from "./ProductModal";
 
 interface ProductProps {
   id: number;
@@ -19,80 +19,217 @@ interface ProductProps {
 }
 
 export default function ProductCard(props: ProductProps) {
-  const { id, title, image, collection_name, layout } = props;
+  const {
+    id,
+    title,
+    price,
+    image,
+    collection_name,
+    layout,
+    available_sizes,
+  } = props;
+
   const [showModal, setShowModal] = useState(false);
+  const [liked, setLiked] = useState(false);
+
+  const displayPrice = price ?? 0;
 
   return (
     <>
-      <motion.div
+      <motion.article
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        className="group relative flex flex-col cursor-pointer"
-        onClick={() => setShowModal(true)}
+        viewport={{ once: true, margin: "-50px" }}
+        transition={{ duration: 0.4 }}
+        className="group relative flex flex-col"
       >
+
+        {/* IMAGE */}
         <div className="relative">
-          <div className="polaroid relative aspect-[210/297] overflow-hidden border-[1px] border-z-border p-1 bg-z-paper shadow-[4px_4px_0px_0px_var(--color-z-shadow)] transition-all duration-300 group-hover:shadow-none group-hover:translate-x-[2px] group-hover:translate-y-[2px]">
-            <div className="tape -top-2 left-1/2 -translate-x-1/2 w-16 h-4 opacity-30 group-hover:opacity-100 transition-opacity z-10" />
-            <div className="w-full h-full overflow-hidden bg-z-paper relative">
+
+          <button
+            type="button"
+            onClick={() => setLiked(!liked)}
+            aria-label={liked ? "Remove from wishlist" : "Add to wishlist"}
+            className="absolute top-3 right-3 z-30 w-9 h-9 flex items-center justify-center bg-z-paper/90 border border-z-border backdrop-blur-sm hover:bg-z-ink hover:text-z-paper transition-all"
+          >
+            <Heart
+              className={`w-4 h-4 ${
+                liked ? "fill-current" : ""
+              }`}
+            />
+          </button>
+
+          {/* Poster */}
+          <div
+            className="relative aspect-[210/297] overflow-hidden border border-z-border bg-z-paper p-1 shadow-[5px_5px_0px_0px_var(--color-z-shadow)] transition-all duration-300 group-hover:shadow-[2px_2px_0px_0px_var(--color-z-shadow)] group-hover:translate-x-[3px] group-hover:translate-y-[3px]"
+          >
+
+            <div className="relative w-full h-full overflow-hidden bg-z-paper">
+
               <img
                 src={image}
                 alt={title}
                 loading="lazy"
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
               />
+
+              {/* Hover overlay */}
+              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300" />
+
+              {/* Quick view */}
+              <button
+                type="button"
+                onClick={() => setShowModal(true)}
+                className="absolute left-1/2 bottom-5 -translate-x-1/2 translate-y-3 opacity-0 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 bg-z-paper text-z-ink border border-z-border px-5 py-2.5 flex items-center gap-2 font-mono text-[10px] font-bold uppercase tracking-widest whitespace-nowrap"
+              >
+                <Eye className="w-3.5 h-3.5" />
+                Quick View
+              </button>
+
             </div>
           </div>
 
-          {layout && layout !== 'Single' && (
-            <div className="absolute top-4 right-2 z-20 bg-z-ink text-white px-2 py-0.5 text-[8px] font-mono font-black uppercase tracking-widest shadow-[2px_2px_0px_0px_var(--color-z-shadow)] rotate-2">
-              {layout}_SYS
+          {/* Layout badge */}
+          {layout && layout !== "Single" && (
+            <div className="absolute left-3 top-3 z-20 bg-z-ink text-z-paper px-2.5 py-1 text-[8px] font-mono font-bold uppercase tracking-widest">
+              {layout}
             </div>
           )}
+
         </div>
 
-        <div className="mt-4 px-1">
-          <h3 className="text-base font-display font-bold text-z-ink tracking-tighter uppercase leading-none">{title}</h3>
-          <p className="text-[10px] font-mono text-z-muted uppercase mt-1">{collection_name || 'Poster'}</p>
-        </div>
-      </motion.div>
+        {/* PRODUCT INFORMATION */}
+        <div className="pt-4 px-0.5">
 
+          {/* Collection */}
+          <p className="text-[9px] font-mono font-bold uppercase tracking-[0.2em] text-z-muted mb-1.5">
+            {collection_name || "Poster Theory"}
+          </p>
+
+          {/* Title */}
+          <Link
+            to={`/product/${id}`}
+            className="block"
+          >
+            <h3 className="font-display font-bold text-sm sm:text-base uppercase tracking-tight leading-tight text-z-ink hover:text-z-muted transition-colors line-clamp-2">
+              {title}
+            </h3>
+          </Link>
+
+          {/* Price + Sizes */}
+          <div className="flex items-end justify-between gap-3 mt-3">
+
+            <div>
+              <p className="font-display font-black text-lg text-z-ink">
+                ₹{displayPrice}
+              </p>
+
+              {available_sizes && available_sizes.length > 0 && (
+                <p className="text-[8px] font-mono uppercase tracking-widest text-z-muted mt-0.5">
+                  {available_sizes.length} sizes available
+                </p>
+              )}
+            </div>
+
+            {/* Add button */}
+            <button
+              type="button"
+              onClick={() => setShowModal(true)}
+              className="group/cart flex items-center justify-center gap-2 bg-z-ink text-z-paper px-3 py-2.5 font-mono text-[9px] font-bold uppercase tracking-widest hover:bg-z-muted transition-colors"
+            >
+              <ShoppingBag className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">
+                Add
+              </span>
+            </button>
+
+          </div>
+
+        </div>
+      </motion.article>
+
+      {/* PRODUCT MODAL */}
       {showModal && (
-        <ProductModal product={props} onClose={() => setShowModal(false)} />
+        <ProductModal
+          product={props}
+          onClose={() => setShowModal(false)}
+        />
       )}
     </>
   );
 }
 
-export function CategoryCard({ title, image, path }: { title: string; image: string; path: string }) {
-  return (
-    <Link to={path} className="group relative aspect-[210/297] overflow-hidden border-2 border-z-border shadow-[8px_8px_0px_0px_var(--color-z-shadow)] hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px] transition-all bg-z-white flex items-center justify-center p-3">
-      <div className="relative w-full h-full overflow-hidden border border-z-border flex items-center justify-center bg-[#f8f8f8]">
-        {image ? (
-          <img
-            src={image}
-            alt={title}
-            loading="lazy"
-            className="w-full h-full object-contain p-4 group-hover:scale-110 transition-transform duration-700"
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center">
-            <span className="text-[10px] font-mono text-z-ink/30 uppercase">No image</span>
-          </div>
-        )}
-        <div className="absolute inset-0 bg-z-ink/5 group-hover:opacity-0 transition-opacity" />
 
-        <div className="absolute inset-x-0 bottom-0 p-6 bg-gradient-to-t from-z-ink/90 to-transparent">
-          <p className="text-[11px] text-z-accent uppercase font-mono mb-2 font-bold tracking-widest opacity-80">DISCOVERY//001</p>
-          <div className="flex justify-between items-end text-white">
-            <h3 className="font-display font-extrabold text-2xl sm:text-4xl tracking-tighter uppercase leading-[0.8]">{title}</h3>
-            <div className="w-8 h-8 sm:w-10 sm:h-10 border-2 border-white flex items-center justify-center bg-z-accent shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] group-hover:shadow-none transition-all ml-4">
-              <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+/* =========================================================
+   CATEGORY CARD
+========================================================= */
+
+interface CategoryCardProps {
+  title: string;
+  image: string;
+  path: string;
+}
+
+export function CategoryCard({
+  title,
+  image,
+  path,
+}: CategoryCardProps) {
+  return (
+    <Link
+      to={path}
+      className="group relative block"
+    >
+
+      <div className="relative aspect-[210/297] overflow-hidden border border-z-border bg-z-paper shadow-[6px_6px_0px_0px_var(--color-z-shadow)] transition-all duration-300 group-hover:shadow-[2px_2px_0px_0px_var(--color-z-shadow)] group-hover:translate-x-[4px] group-hover:translate-y-[4px]">
+
+        {/* Image */}
+        <div className="absolute inset-1 overflow-hidden">
+
+          {image ? (
+            <img
+              src={image}
+              alt={title}
+              loading="lazy"
+              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center bg-z-paper">
+              <span className="font-mono text-[10px] text-z-muted uppercase tracking-widest">
+                No Image
+              </span>
             </div>
-          </div>
+          )}
+
         </div>
+
+        {/* Gradient */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
+
+        {/* Content */}
+        <div className="absolute bottom-0 left-0 right-0 p-5">
+
+          <p className="font-mono text-[8px] font-bold uppercase tracking-[0.25em] text-white/60 mb-2">
+            Collection
+          </p>
+
+          <div className="flex items-end justify-between gap-3">
+
+            <h3 className="font-display font-black text-xl sm:text-2xl uppercase tracking-tighter leading-[0.9] text-white">
+              {title}
+            </h3>
+
+            <div className="shrink-0 w-9 h-9 border border-white bg-white text-black flex items-center justify-center transition-all duration-300 group-hover:bg-black group-hover:text-white group-hover:border-white">
+              <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-0.5" />
+            </div>
+
+          </div>
+
+        </div>
+
       </div>
+
     </Link>
   );
 }
-

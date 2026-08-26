@@ -37,18 +37,7 @@ export default function Footer() {
             </ul>
           </div>
 
-          <div className="flex flex-col items-start md:items-end">
-            <h4 className="text-[14px] font-display font-black tracking-widest text-z-ink mb-10 border-b-2 border-z-border inline-block pb-1 italic">SIGNAL_SUBSCRIBE</h4>
-            <div className="relative w-full max-w-xs group">
-              <input 
-                type="email" 
-                placeholder="YOUR_SIGNAL_ADDRESS" 
-                className="w-full bg-z-white border-2 border-z-border p-4 text-[12px] tracking-widest focus:outline-none focus:bg-z-accent focus:text-white transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] group-hover:shadow-none translate-x-0 group-hover:translate-x-[2px] group-hover:translate-y-[2px] font-bold"
-              />
-              <ArrowRight className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-z-ink group-hover:text-white cursor-pointer" />
-            </div>
-            <p className="text-[11px] text-z-muted mt-6 font-mono tracking-widest font-bold">GLOBAL_TERMINAL — EST. 2024</p>
-          </div>
+         
         </div>
         
         <div className="border-t-2 border-dash-z-border border-z-border pt-12 flex flex-col md:flex-row justify-between items-center text-z-muted font-mono text-[12px] tracking-[0.2em] font-bold">

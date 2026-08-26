@@ -4,6 +4,8 @@ import api from '../lib/api';
 import { Link } from 'react-router-dom';
 import Hero from '../components/Hero';
 import ProductCard from '../components/ProductCard';
+import Collections from '../components/Collections';
+import PosterLayouts from '../components/PosterLayouts';
 import { Truck, Shield, RotateCcw, Palette } from 'lucide-react';
 
 interface SectionConfig {
@@ -86,45 +88,13 @@ export default function Home() {
   return (
     <div className=" sm:pt-20">
       <Hero />
-
-      {/* Trust Bar */}
-      <section className="border-y-2 border-z-border py-4 sm:py-5 bg-z-paper">
-        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6">
-          <div className="flex items-center gap-2 sm:gap-3">
-            <Truck className="w-4 sm:w-5 h-4 sm:h-5 text-z-ink shrink-0" />
-            <div>
-              <p className="text-[10px] sm:text-[11px] font-mono font-bold uppercase text-z-ink">Free Shipping</p>
-              <p className="text-[8px] sm:text-[9px] font-mono text-z-muted uppercase">Orders above ₹499</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2 sm:gap-3">
-            <Shield className="w-4 sm:w-5 h-4 sm:h-5 text-z-ink shrink-0" />
-            <div>
-              <p className="text-[10px] sm:text-[11px] font-mono font-bold uppercase text-z-ink">Premium Quality</p>
-              <p className="text-[8px] sm:text-[9px] font-mono text-z-muted uppercase">300 GSM Matte</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2 sm:gap-3">
-            <RotateCcw className="w-4 sm:w-5 h-4 sm:h-5 text-z-ink shrink-0" />
-            <div>
-              <p className="text-[10px] sm:text-[11px] font-mono font-bold uppercase text-z-ink">Easy Returns</p>
-              <p className="text-[8px] sm:text-[9px] font-mono text-z-muted uppercase">7 day policy</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2 sm:gap-3">
-            <Palette className="w-4 sm:w-5 h-4 sm:h-5 text-z-ink shrink-0" />
-            <div>
-              <p className="text-[10px] sm:text-[11px] font-mono font-bold uppercase text-z-ink">Custom Prints</p>
-              <p className="text-[8px] sm:text-[9px] font-mono text-z-muted uppercase">Your own design</p>
-            </div>
-          </div>
-        </div>
-      </section>
+     
 
       {/* Shop by Collection — Marquee */}
       {collections.length > 0 && (
         <section className="py-16 sm:py-24 border-b-2 border-z-border overflow-hidden bg-gray-50">
-          <div className="max-w-[1440px] mx-auto px-6 mb-10">
+          
+          {/* <div className="max-w-[1440px] mx-auto px-6 mb-10">
             <div className="text-center">
               <p className="text-[11px] font-mono uppercase tracking-[0.3em] text-z-muted font-bold mb-2">Browse By</p>
               <h2 className="font-display font-black text-3xl sm:text-5xl uppercase tracking-tighter text-z-ink">Collections</h2>
@@ -155,7 +125,8 @@ export default function Home() {
             <Link to="/collection" className="inline-block px-8 py-3 bg-z-ink text-white font-mono text-[12px] font-bold uppercase tracking-widest hover:bg-z-ink/80 transition-colors">
               View All Collections
             </Link>
-          </div>
+          </div> */}
+          <Collections collections={collections}/>
         </section>
       )}
 
@@ -194,7 +165,7 @@ export default function Home() {
       )}
 
       {/* Custom Print CTA */}
-      <section className="py-12 sm:py-24 px-4 sm:px-6">
+      <section className=" sm:py-24  sm:px-6">
         <div className="max-w-[1440px] mx-auto">
           <div className="bg-z-ink text-z-paper p-6 sm:p-16 flex flex-col md:flex-row items-center gap-6 sm:gap-16">
             <div className="flex-1">
@@ -232,29 +203,26 @@ export default function Home() {
         <ProductMarquee items={trending} title="Trending Now" subtitle="Popular Picks" link="/collection?status=Trending" />
       )}
 
-      {/* Featured */}
-      {sectionLimits.featured.enabled && featured.length > 0 && (
-        <ProductMarquee items={featured} title="Staff Picks" subtitle="Curated For You" link="/collection?status=Featured" />
-      )}
+      
 
       {/* About */}
-      <section className="py-12 sm:py-32 px-4 sm:px-6 bg-gray-50">
+      <section className="py-12 sm:py-32 px-4 sm:px-6 bg-radial from-gray-900 to-black">
         <div className="max-w-[1200px] mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-20 items-center">
             <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
               <p className="text-[11px] font-mono uppercase tracking-[0.3em] text-z-muted font-bold mb-4">About Us</p>
-              <h2 className="font-display font-black text-3xl sm:text-5xl uppercase tracking-tighter text-z-ink leading-[0.9] mb-6">
+              <h2 className="font-display font-black text-3xl sm:text-5xl uppercase tracking-tighter text-z-paper leading-[0.9] mb-6">
                 Posters That<br/>Define Your Space
               </h2>
-              <div className="space-y-4 text-[13px] font-mono text-z-muted leading-relaxed">
+              <div className="space-y-4 text-[13px] font-mono text-z-paper leading-relaxed">
                 <p>We believe your walls should reflect who you are. Every poster in our collection is carefully curated — from anime and movies to minimalist art and typography.</p>
                 <p>Printed on premium 300 GSM matte paper with vibrant, fade-resistant inks. Available in 6 sizes and multiple panel layouts.</p>
               </div>
-              <Link to="/story" className="inline-block mt-8 px-8 py-3 border-2 border-z-ink text-z-ink font-mono text-[12px] font-bold uppercase tracking-widest hover:bg-z-ink hover:text-white transition-all">
+              <Link to="/story" className="inline-block mt-8 px-8 py-3 border-2 border-z-paper text-z-paper font-mono text-[12px] font-bold uppercase tracking-widest hover:bg-z-ink hover:text-white transition-all">
                 Read Our Story
               </Link>
             </motion.div>
-            <motion.div initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} className="aspect-[4/5] overflow-hidden border-2 border-z-border">
+            <motion.div initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} className="aspect-[4/5] overflow-hidden border-3 border-z-paper shadow-2xl shadow-white">
               {aboutImage ? (
                 <img src={aboutImage} alt="About Poster Theory" className="w-full h-full object-cover" />
               ) : (

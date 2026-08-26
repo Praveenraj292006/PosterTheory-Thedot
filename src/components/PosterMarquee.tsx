@@ -1,7 +1,7 @@
 import React from "react";
 import { motion } from "motion/react";
 import Poster from "./Poster";
-import type { PosterImage } from "../types/poster";
+import type { PosterImage } from "./types/poster";
 
 interface PosterMarqueeProps {
   images: PosterImage[];

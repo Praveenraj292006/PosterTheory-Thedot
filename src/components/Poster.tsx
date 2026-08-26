@@ -1,5 +1,5 @@
 import React from "react";
-import type { PosterImage } from "../types/poster";
+import type { PosterImage } from "./types/poster";
 
 interface PosterProps {
   image: PosterImage;
@@ -13,28 +13,19 @@ const Poster: React.FC<PosterProps> = ({
   return (
     <div
       className={`
-        group
         relative
-        w-full
-        aspect-[2/3]
         overflow-hidden
-        border-2
-        border-white/10
         bg-z-paper
+        border
+        border-white/10
         ${className}
       `}
     >
       <img
         src={image.url}
-        alt="Featured poster"
-        className="
-          w-full
-          h-full
-          object-cover
-          transition-transform
-          duration-700
-          group-hover:scale-105
-        "
+        alt="Poster"
+        className="block w-full h-auto object-contain"
+        draggable={false}
       />
     </div>
   );
