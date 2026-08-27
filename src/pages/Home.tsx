@@ -6,6 +6,7 @@ import Hero from '../components/Hero';
 import ProductCard from '../components/ProductCard';
 import Collections from '../components/Collections';
 import PosterLayouts from '../components/PosterLayouts';
+import HowItWorks from '../components/HowItWorks';
 import { Truck, Shield, RotateCcw, Palette } from 'lucide-react';
 
 interface SectionConfig {
@@ -92,7 +93,7 @@ export default function Home() {
 
       {/* Shop by Collection — Marquee */}
       {collections.length > 0 && (
-        <section className="py-16 sm:py-24 border-b-2 border-z-border overflow-hidden bg-gray-50">
+        <section className="sm: border-z-border overflow-hidden ">
           
           {/* <div className="max-w-[1440px] mx-auto px-6 mb-10">
             <div className="text-center">
@@ -129,9 +130,15 @@ export default function Home() {
           <Collections collections={collections}/>
         </section>
       )}
+      <section className=" sm:py-24 px-4 sm:px-6  border-z-border">
+        <HowItWorks/>
 
-      {/* How It Works */}
-      <section className="py-12 sm:py-24 px-4 sm:px-6 border-b-2 border-z-border">
+      </section>
+
+
+
+      
+      {/* <section className="py-12 sm:py-24 px-4 sm:px-6 border-b-2 border-z-border">
         <div className="max-w-[1440px] mx-auto">
           <div className="text-center mb-8 sm:mb-14">
             <p className="text-[10px] sm:text-[11px] font-mono uppercase tracking-[0.3em] text-z-muted font-bold mb-2">Simple Process</p>
@@ -152,7 +159,7 @@ export default function Home() {
             ))}
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* Bestsellers — Grid */}
       {sectionLimits.bestseller.enabled && bestsellers.length > 0 && (

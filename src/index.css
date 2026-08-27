@@ -133,3 +133,19 @@ input[type="date"] {
 :root.dark .font-mono[class*="uppercase"][class*="tracking-"] {
   color: var(--color-z-muted);
 }
+
+@font-face {
+  font-family:"Montserrat";
+  src: url('/Font/Montserrat-Italic-VariableFont_wght.ttf');
+  font-weight: 600;
+}
+@font-face {
+  font-family:"Newake";
+  src: url('/Font/NewakeFont-Demo.otf');
+  font-weight: 300;
+}
+
+@font-face {
+  font-family: "Bebas";
+  src: url(/Font/Bebas_Neue/BebasNeue-Regular.ttf);
+}
