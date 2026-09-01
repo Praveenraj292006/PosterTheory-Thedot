@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { motion } from 'motion/react';
 import api from '../lib/api';
 import { Link } from 'react-router-dom';
@@ -7,7 +7,15 @@ import ProductCard from '../components/ProductCard';
 import Collections from '../components/Collections';
 import PosterLayouts from '../components/PosterLayouts';
 import HowItWorks from '../components/HowItWorks';
+import About from '../components/About';
 import { Truck, Shield, RotateCcw, Palette } from 'lucide-react';
+import gsap from "gsap";
+import Customize from '../components/Customize';
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import TextReveal from '../components/Textreveal';
+import PromotionalPopup from '../components/PromotionalPopUp';
+
+gsap.registerPlugin(ScrollTrigger);
 
 interface SectionConfig {
   limit: number;
@@ -21,12 +29,29 @@ export default function Home() {
   const [bestsellers, setBestsellers] = useState<any[]>([]);
   const [collections, setCollections] = useState<any[]>([]);
   const [aboutImage, setAboutImage] = useState('');
+  const [showPromotion, setShowPromotion] = useState(false);
+  const [pageReady, setPageReady] = useState(false);
   const [sectionLimits, setSectionLimits] = useState<Record<string, SectionConfig>>({
     new_arrivals: { limit: 8, enabled: true },
     trending: { limit: 8, enabled: true },
     featured: { limit: 8, enabled: true },
     bestseller: { limit: 8, enabled: true },
   });
+
+
+ 
+
+useEffect(() => {
+  if ("scrollRestoration" in window.history) {
+    window.history.scrollRestoration = "manual";
+  }
+
+  window.scrollTo(0, 0);
+
+  return () => {
+    window.history.scrollRestoration = "auto";
+  };
+}, []);
 
   useEffect(() => {
     Promise.all([
@@ -49,17 +74,20 @@ export default function Home() {
         bestseller: hpRes.data?.bestseller || { limit: 8, enabled: true },
       };
       setSectionLimits(limits);
+      setPageReady(true);
 
       if (limits.new_arrivals.enabled) api.get(`/api/products?filter=new_arrival&limit=${limits.new_arrivals.limit}`).then(r => setNewArrivals(Array.isArray(r.data) ? r.data : [])).catch(() => {});
       if (limits.trending.enabled) api.get(`/api/products?filter=trending&limit=${limits.trending.limit}`).then(r => setTrending(Array.isArray(r.data) ? r.data : [])).catch(() => {});
       if (limits.featured.enabled) api.get(`/api/products?filter=featured&limit=${limits.featured.limit}`).then(r => setFeatured(Array.isArray(r.data) ? r.data : [])).catch(() => {});
       if (limits.bestseller.enabled) api.get(`/api/products?filter=bestseller&limit=${limits.bestseller.limit}`).then(r => setBestsellers(Array.isArray(r.data) ? r.data : [])).catch(() => {});
+      
     }).catch(() => {
       api.get('/api/products/collections').then(r => { if (Array.isArray(r.data)) setCollections(r.data.map((c: any) => ({ name: c.name, img: '', path: `/collection?collection=${c.name}` }))); }).catch(() => {});
       api.get('/api/products?filter=new_arrival&limit=8').then(r => setNewArrivals(Array.isArray(r.data) ? r.data : [])).catch(() => {});
       api.get('/api/products?filter=trending&limit=8').then(r => setTrending(Array.isArray(r.data) ? r.data : [])).catch(() => {});
       api.get('/api/products?filter=featured&limit=8').then(r => setFeatured(Array.isArray(r.data) ? r.data : [])).catch(() => {});
       api.get('/api/products?filter=bestseller&limit=8').then(r => setBestsellers(Array.isArray(r.data) ? r.data : [])).catch(() => {});
+        setPageReady(true);
     });
   }, []);
 
@@ -67,8 +95,8 @@ export default function Home() {
     <section className="py-16 sm:py-24 border-b-2 border-z-border overflow-hidden">
       <div className="max-w-[1440px] mx-auto px-6 mb-10 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
-          <p className="text-[11px] font-mono uppercase tracking-[0.3em] text-z-muted font-bold mb-2">{subtitle}</p>
-          <h2 className="font-display font-black text-3xl sm:text-5xl uppercase tracking-tighter text-z-ink">{title}</h2>
+          {/* <p className="text-[11px] font-mono uppercase tracking-[0.3em] text-z-muted font-bold mb-2">{subtitle}</p> */}
+          <TextReveal as="h2" className="font-display  text-3xl sm:text-5xl uppercase tracking-tighter text-z-ink">{title}</TextReveal>
         </div>
         <Link to={link} className="text-[12px] font-mono font-bold uppercase tracking-widest text-z-ink border-b-2 border-z-ink hover:text-z-muted hover:border-z-muted transition-colors pb-1">
           View All →
@@ -130,10 +158,9 @@ export default function Home() {
           <Collections collections={collections}/>
         </section>
       )}
-      <section className=" sm:py-24 px-4 sm:px-6  border-z-border">
-        <HowItWorks/>
 
-      </section>
+      <div><Customize/></div>
+      
 
 
 
@@ -171,12 +198,17 @@ export default function Home() {
         <ProductMarquee items={newArrivals} title="New Arrivals" subtitle="Just Dropped" link="/collection?status=New Arrival" />
       )}
 
-      {/* Custom Print CTA */}
-      <section className=" sm:py-24  sm:px-6">
+      <section className=" sm:py-24 px-4 sm:px-6  border-z-border">
+        <HowItWorks/>
+
+      </section>
+
+      {/* Custom Print CTA 
+      <section   className=" sm:py-24  sm:px-6">
         <div className="max-w-[1440px] mx-auto">
           <div className="bg-z-ink text-z-paper p-6 sm:p-16 flex flex-col md:flex-row items-center gap-6 sm:gap-16">
             <div className="flex-1">
-              <p className="text-[11px] font-mono uppercase tracking-[0.3em] text-z-paper/50 mb-4">Custom Print Studio</p>
+              <p  className="text-[11px] font-mono uppercase tracking-[0.3em] text-z-paper/50 mb-4">Custom Print Studio</p>
               <h2 className="font-display font-black text-3xl sm:text-5xl uppercase tracking-tighter leading-[0.9] mb-6">
                 Your Image.<br/>Our Print.
               </h2>
@@ -203,7 +235,7 @@ export default function Home() {
             </div>
           </div>
         </div>
-      </section>
+      </section>*/}
 
       {/* Trending — Grid */}
       {sectionLimits.trending.enabled && trending.length > 0 && (
@@ -212,35 +244,20 @@ export default function Home() {
 
       
 
+      <div>
+        <About aboutImage={aboutImage}  pageReady={pageReady}/>
+      </div>
+      <div><button type="button" onClick={() => setShowPromotion(true)} className="fixed bottom-6 right-6 z-[100] px-5 py-3 bg-z-ink text-z-paper border-2 border-z-paper font-mono text-[10px] font-bold uppercase tracking-widest shadow-[5px_5px_0px_0px_var(--color-z-shadow)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all">
+  View Promotion
+</button></div>
+
+<PromotionalPopup
+  open={showPromotion}
+  onClose={() => setShowPromotion(false)}
+/>
+
       {/* About */}
-      <section className="py-12 sm:py-32 px-4 sm:px-6 bg-radial from-gray-900 to-black">
-        <div className="max-w-[1200px] mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-20 items-center">
-            <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-              <p className="text-[11px] font-mono uppercase tracking-[0.3em] text-z-muted font-bold mb-4">About Us</p>
-              <h2 className="font-display font-black text-3xl sm:text-5xl uppercase tracking-tighter text-z-paper leading-[0.9] mb-6">
-                Posters That<br/>Define Your Space
-              </h2>
-              <div className="space-y-4 text-[13px] font-mono text-z-paper leading-relaxed">
-                <p>We believe your walls should reflect who you are. Every poster in our collection is carefully curated — from anime and movies to minimalist art and typography.</p>
-                <p>Printed on premium 300 GSM matte paper with vibrant, fade-resistant inks. Available in 6 sizes and multiple panel layouts.</p>
-              </div>
-              <Link to="/story" className="inline-block mt-8 px-8 py-3 border-2 border-z-paper text-z-paper font-mono text-[12px] font-bold uppercase tracking-widest hover:bg-z-ink hover:text-white transition-all">
-                Read Our Story
-              </Link>
-            </motion.div>
-            <motion.div initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} className="aspect-[4/5] overflow-hidden border-3 border-z-paper shadow-2xl shadow-white">
-              {aboutImage ? (
-                <img src={aboutImage} alt="About Poster Theory" className="w-full h-full object-cover" />
-              ) : (
-                <div className="w-full h-full bg-z-border/10 flex items-center justify-center">
-                  <span className="text-[11px] font-mono text-z-ink/30 uppercase">About Image</span>
-                </div>
-              )}
-            </motion.div>
-          </div>
-        </div>
-      </section>
+
     </div>
   );
 }

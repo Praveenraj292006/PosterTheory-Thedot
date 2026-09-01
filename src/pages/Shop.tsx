@@ -3,6 +3,8 @@ import api from '../lib/api';
 import { useSearchParams } from 'react-router-dom';
 import ProductCard from '../components/ProductCard';
 import { SlidersHorizontal, X, ChevronDown, ChevronUp, Search } from 'lucide-react';
+import mockUp from '../assets/Mocup-A4.png'
+
 
 const STATUS_FLAGS = [
   { key: 'is_featured', label: 'Featured' },
@@ -224,11 +226,13 @@ export default function Shop() {
 
   return (
     <div className="pt-24 sm:pt-40 pb-16 sm:pb-32 min-h-screen">
+
+      
       <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-12">
         <header className="mb-8 sm:mb-16 flex flex-col xl:flex-row xl:items-end justify-between border-b-4 border-z-border pb-6 sm:pb-12 gap-4 sm:gap-8">
           <div className="flex-1 min-w-0">
-            <h1 className="font-display font-black text-4xl sm:text-8xl lg:text-9xl uppercase tracking-tighter leading-none italic">
-              <span className="text-outline">Collections</span>
+            <h1 className="font-display font-bold  text-4xl sm:text-8xl lg:text-9xl uppercase tracking-tighter leading-none italic">
+              <span >Collections</span>
             </h1>
             <p className="text-[14px] sm:text-[30px] font-mono text-red-500 uppercase mt-2 sm:mt-4 tracking-widest">All A series Sizes</p>
           </div>
@@ -293,37 +297,37 @@ export default function Shop() {
             <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
               <div className="flex flex-wrap gap-1.5">
                 {collectionFilter && (
-                  <span className="inline-flex items-center gap-1 px-2 py-1 bg-z-ink text-z-paper text-[9px] font-mono font-black uppercase">
+                  <span className="inline-flex items-center gap-1 px-2 py-1 bg-z-ink text-z-paper text-[9px] font-mono uppercase">
                     {collectionFilter} <X className="w-2.5 h-2.5 cursor-pointer" onClick={() => setFilter('collection', null)} />
                   </span>
                 )}
                 {sizeFilter && (
-                  <span className="inline-flex items-center gap-1 px-2 py-1 bg-z-ink text-z-paper text-[9px] font-mono font-black uppercase">
+                  <span className="inline-flex items-center gap-1 px-2 py-1 bg-z-ink text-z-paper text-[9px] font-mono uppercase">
                     {sizeFilter} <X className="w-2.5 h-2.5 cursor-pointer" onClick={() => setFilter('size', null)} />
                   </span>
                 )}
                 {orientationFilter && (
-                  <span className="inline-flex items-center gap-1 px-2 py-1 bg-z-ink text-z-paper text-[9px] font-mono font-black uppercase">
+                  <span className="inline-flex items-center gap-1 px-2 py-1 bg-z-ink text-z-paper text-[9px] font-mono uppercase">
                     {orientationFilter} <X className="w-2.5 h-2.5 cursor-pointer" onClick={() => setFilter('orientation', null)} />
                   </span>
                 )}
                 {layoutFilter && (
-                  <span className="inline-flex items-center gap-1 px-2 py-1 bg-z-ink text-z-paper text-[9px] font-mono font-black uppercase">
+                  <span className="inline-flex items-center gap-1 px-2 py-1 bg-z-ink text-z-paper text-[9px] font-mono uppercase">
                     {layoutFilter} <X className="w-2.5 h-2.5 cursor-pointer" onClick={() => setFilter('layout', null)} />
                   </span>
                 )}
                 {statusFilter && (
-                  <span className="inline-flex items-center gap-1 px-2 py-1 bg-z-ink text-z-paper text-[9px] font-mono font-black uppercase">
+                  <span className="inline-flex items-center gap-1 px-2 py-1 bg-z-ink text-z-paper text-[9px] font-mono  uppercase">
                     {statusFilter} <X className="w-2.5 h-2.5 cursor-pointer" onClick={() => setFilter('status', null)} />
                   </span>
                 )}
                 {tagQuery && (
-                  <span className="inline-flex items-center gap-1 px-2 py-1 bg-z-ink text-z-paper text-[9px] font-mono font-black uppercase">
+                  <span className="inline-flex items-center gap-1 px-2 py-1 bg-z-ink text-z-paper text-[9px] font-mono uppercase">
                     #{tagQuery} <X className="w-2.5 h-2.5 cursor-pointer" onClick={() => setFilter('tag', null)} />
                   </span>
                 )}
                 {searchQuery && (
-                  <span className="inline-flex items-center gap-1 px-2 py-1 bg-z-ink text-z-paper text-[9px] font-mono font-black uppercase">
+                  <span className="inline-flex items-center gap-1 px-2 py-1 bg-z-ink text-z-paper text-[9px] font-mono uppercase">
                     "{searchQuery}" <X className="w-2.5 h-2.5 cursor-pointer" onClick={() => setFilter('q', null)} />
                   </span>
                 )}
@@ -338,7 +342,7 @@ export default function Shop() {
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-x-6 gap-y-12">
                 {[1,2,3,4,5,6,7,8].map(i => (
                   <div key={i} className="animate-pulse">
-                    <div className="aspect-[210/297] bg-z-border/10 border-2 border-z-border mb-4" />
+                    <div className="aspect-[200/240] bg-z-border/10 border-2 border-z-border mb-4" />
                     <div className="h-3 bg-z-border/10 border border-z-border w-2/3 mb-2" />
                     <div className="h-3 bg-z-border/10 border border-z-border w-1/3" />
                   </div>
@@ -346,24 +350,24 @@ export default function Shop() {
               </div>
             ) : paginated.length > 0 ? (
               <>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-x-6 gap-y-12">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4  gap-y-12 ">
                   {paginated.map((p: any) => (
                     <ProductCard key={p.id} {...p} />
                   ))}
                 </div>
                 {totalPages > 0 && (
-                  <div className="flex items-center justify-center gap-3 mt-12">
+                  <div className="flex items-center justify-center gap-3 mt-12 ">
                     <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}
-                      className="px-4 py-2 text-[11px] font-mono font-black uppercase border-2 border-z-border disabled:opacity-30 hover:bg-z-ink hover:text-z-paper transition-all active:scale-95">Prev</button>
+                      className="px-4 py-2 text-[11px] font-mono  uppercase border-2 border-z-border disabled:opacity-30 hover:bg-z-ink hover:text-z-paper transition-all active:scale-95">Prev</button>
                     <span className="text-[11px] font-mono font-black text-z-ink">{page} / {totalPages}</span>
                     <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages}
-                      className="px-4 py-2 text-[11px] font-mono font-black uppercase border-2 border-z-border disabled:opacity-30 hover:bg-z-ink hover:text-z-paper transition-all active:scale-95">Next</button>
+                      className="px-4 py-2 text-[11px] font-mono uppercase border-2 border-z-border disabled:opacity-30 hover:bg-z-ink hover:text-z-paper transition-all active:scale-95">Next</button>
                   </div>
                 )}
               </>
             ) : (
               <div className="py-32 text-center bg-z-paper border-4 border-dashed border-z-border">
-                <p className="font-display font-black text-4xl text-z-muted uppercase italic">No results found.</p>
+                <p className="font-display  text-4xl text-z-muted uppercase italic">No results found.</p>
                 <p className="font-mono text-[12px] font-bold text-z-muted mt-4 uppercase tracking-[0.3em]">Try adjusting your filters.</p>
               </div>
             )}
@@ -400,7 +404,7 @@ export default function Shop() {
 
             <div className="p-6">
               {activeCount > 0 && (
-                <button onClick={clearAll} className="w-full mb-5 py-2 text-[10px] font-mono font-black uppercase tracking-wider text-z-muted border-2 border-z-border/30 hover:border-z-ink hover:text-z-ink transition-all">
+                <button onClick={clearAll} className="w-full mb-5 py-2 text-[10px] font-mono  uppercase tracking-wider text-z-muted border-2 border-z-border/30 hover:border-z-ink hover:text-z-ink transition-all">
                   Clear All Filters
                 </button>
               )}
@@ -408,7 +412,7 @@ export default function Shop() {
             </div>
 
             <div className="sticky bottom-0 bg-z-paper border-t-2 border-z-border p-4">
-              <button onClick={() => setMobileSheetOpen(false)} className="w-full py-3 bg-z-ink text-z-paper text-[11px] font-mono font-black uppercase tracking-widest active:scale-95 transition-all">
+              <button onClick={() => setMobileSheetOpen(false)} className="w-full py-3 bg-z-ink text-z-paper text-[11px] font-mono  uppercase tracking-widest active:scale-95 transition-all">
                 Show {filtered.length} Result{filtered.length !== 1 ? 's' : ''}
               </button>
             </div>

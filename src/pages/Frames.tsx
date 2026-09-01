@@ -66,13 +66,13 @@ function FrameCard({ size, index, frameColor }: { size: typeof FRAME_SIZES[0]; i
 
       {/* Size info */}
       <div className="text-center">
-        <p className="font-display font-black text-lg sm:text-xl uppercase tracking-tight text-z-ink leading-none">
+        <p className="font-display font-bold text-lg sm:text-xl uppercase tracking-tight text-z-ink leading-none">
           {size.label}
         </p>
         <p className="text-[10px] font-mono font-bold uppercase tracking-widest text-z-muted mt-0.5">
           {size.sub}
         </p>
-        <p className="font-display font-black text-2xl sm:text-3xl text-z-ink mt-2">
+        <p className="font-display font-bold text-2xl sm:text-3xl text-z-ink mt-2">
           &#8377;{size.price}
         </p>
         <p className="text-[9px] font-mono text-z-muted uppercase tracking-wider mt-0.5">
@@ -115,11 +115,11 @@ export default function Frames() {
 
         {/* ── Header ── */}
         <header className="mb-12 sm:mb-20 border-b-4 border-z-border pb-6 sm:pb-12">
-          <p className="text-[11px] sm:text-[13px] font-mono uppercase tracking-[0.3em] sm:tracking-[0.5em] text-z-ink font-black mb-2 sm:mb-4">
+          <p className="text-[11px] sm:text-[13px] font-mono uppercase tracking-[0.3em] sm:tracking-[0.5em] text-z-ink  mb-2 sm:mb-4">
             Premium_Frames_
           </p>
           <h1 className="font-display font-black text-5xl sm:text-8xl lg:text-9xl uppercase tracking-tighter leading-none italic">
-            <span className="text-outline">Frames</span>
+            <span >Frames</span>
           </h1>
           <p className="text-[13px] sm:text-[18px] font-mono text-z-muted uppercase mt-3 tracking-widest">
             1 inch · Matt finish · Black &amp; White — price includes frame + print
@@ -162,7 +162,7 @@ export default function Frames() {
                   </p>
                 </div>
                 {active && (
-                  <span className={`ml-1 text-[9px] font-mono font-black uppercase tracking-widest ${c.text} opacity-70`}>
+                  <span className={`ml-1 text-[9px] font-mono font-bold uppercase tracking-widest ${c.text} opacity-70`}>
                     ✓
                   </span>
                 )}
@@ -173,9 +173,7 @@ export default function Frames() {
 
         {/* ── Size + Sample Images ── */}
         <section className="mb-16 sm:mb-24">
-          <p className="text-[11px] font-mono font-black uppercase tracking-[0.4em] text-z-muted mb-8 sm:mb-12">
-            Available_Sizes_&amp;_Pricing_
-          </p>
+          
 
           {/* Visual size comparison row */}
           <div className="overflow-x-auto pb-4">
@@ -192,9 +190,7 @@ export default function Frames() {
 
         {/* ── Specs table ── */}
         <section className="mb-16 sm:mb-24">
-          <p className="text-[11px] font-mono font-black uppercase tracking-[0.4em] text-z-muted mb-6">
-            Full_Specs_
-          </p>
+          
           <div className="border-2 border-z-border overflow-hidden shadow-[4px_4px_0px_0px_var(--color-z-shadow)]">
             <table className="w-full text-left">
               <thead>
@@ -207,11 +203,11 @@ export default function Frames() {
               </thead>
               <tbody>
                 {FRAME_SIZES.map((s, i) => (
-                  <tr key={s.label} className={`border-t border-z-border/30 ${i % 2 === 0 ? '' : 'bg-z-ink/[0.03]'}`}>
-                    <td className="px-4 py-3 font-display font-black text-sm uppercase tracking-tight">{s.label}</td>
-                    <td className="px-4 py-3 text-[11px] font-mono text-z-muted uppercase">{s.sub}</td>
-                    <td className="px-4 py-3 text-[11px] font-mono text-z-muted uppercase">1 inch · Black / White Matt</td>
-                    <td className="px-4 py-3 font-display font-black text-base text-right">&#8377;{s.price}</td>
+                  <tr key={s.label} className={`border-t border-2 border-white bg-black `}>
+                    <td className="px-4 py-3 text-white font-display font-bold text-sm uppercase tracking-tight">{s.label}</td>
+                    <td className="px-4 py-3 text-white text-[11px] font-mono  uppercase">{s.sub}</td>
+                    <td className="px-4 py-3 text-white text-[11px] font-mono uppercase">1 inch · Black / White Matt</td>
+                    <td className="px-4 py-3 text-white font-display font-bold text-base text-right">&#8377;{s.price}</td>
                   </tr>
                 ))}
               </tbody>

@@ -141,13 +141,13 @@ export default function Customize() {
         <div className="fixed inset-0 z-[300] bg-black/70 backdrop-blur-sm flex items-center justify-center p-6">
           <div className="bg-z-paper border-2 border-z-border p-8 max-w-md w-full shadow-[8px_8px_0px_0px_var(--color-z-shadow)]">
             <div className="flex justify-between items-center mb-6">
-              <h3 className="font-display font-black text-xl uppercase tracking-tight">Quick Guide</h3>
+              <h3 className="font-display   text-xl uppercase tracking-tight">Quick Guide</h3>
               <button onClick={dismissTutorial} className="p-1 hover:bg-z-ink hover:text-z-paper transition-all"><X className="w-4 h-4" /></button>
             </div>
             <div className="mb-6">
               <div className="flex items-center gap-2 mb-2">
-                <span className="bg-z-ink text-z-paper w-6 h-6 flex items-center justify-center text-[10px] font-mono font-black">{tutorialStep + 1}</span>
-                <span className="font-display font-black text-sm uppercase">{TUTORIAL_STEPS[tutorialStep].title}</span>
+                <span className="bg-z-ink text-z-paper w-6 h-6 flex items-center justify-center text-[10px] font-mono  ">{tutorialStep + 1}</span>
+                <span className="font-display   text-sm uppercase">{TUTORIAL_STEPS[tutorialStep].title}</span>
               </div>
               <p className="text-[12px] font-mono text-z-muted leading-relaxed">{TUTORIAL_STEPS[tutorialStep].desc}</p>
             </div>
@@ -173,9 +173,9 @@ export default function Customize() {
         {/* Header */}
         <header className="mb-6 sm:mb-12 border-b-4 border-z-border pb-6 sm:pb-10 flex flex-col md:flex-row md:items-end justify-between">
           <div>
-            <p className="text-[11px] sm:text-[13px] font-mono uppercase tracking-[0.3em] sm:tracking-[0.5em] text-z-ink font-black mb-2 sm:mb-4">Custom_Print_Studio</p>
-            <h1 className="font-display font-black text-4xl sm:text-6xl md:text-8xl uppercase tracking-tighter leading-none italic">
-              <span className="text-outline">Design</span>_Lab
+            <p className="text-[11px] sm:text-[13px] font-mono uppercase tracking-[0.3em] sm:tracking-[0.5em] text-z-ink   mb-2 sm:mb-4">Custom_Print_Studio</p>
+            <h1 className="font-display  text-4xl sm:text-6xl md:text-8xl uppercase tracking-tighter leading-none italic">
+              <span >Design</span>_Lab
             </h1>
           </div>
           <Logo size="md" className="mt-4 md:mt-0 hidden sm:block" />
@@ -191,7 +191,7 @@ export default function Customize() {
                 <X className="w-4 h-4" />
               </button>
 
-              <p className="text-[11px] font-mono font-black uppercase tracking-widest text-white mb-4 pr-10">
+              <p className="text-[11px] font-mono  uppercase tracking-widest text-white mb-4 pr-10">
                 Preview &mdash; {activePage.size} {activePage.orientation}
                 {activePage.panelCount > 1 && <span> &middot; {activePage.layout} ({activePage.panelCount} sheets)</span>}
               </p>
@@ -253,7 +253,7 @@ export default function Customize() {
                                 backgroundSize: `${cols * 100}% ${rows * 100}%`,
                                 backgroundPosition: `${bgX}% ${bgY}%`,
                               }}>
-                              <span className="absolute bottom-0.5 right-0.5 bg-black/70 text-white text-[7px] font-mono font-black px-1 py-0.5">
+                              <span className="absolute bottom-0.5 right-0.5 bg-black/70 text-white text-[7px] font-mono   px-1 py-0.5">
                                 {idx + 1}/{cols * rows}
                               </span>
                             </div>
@@ -286,7 +286,7 @@ export default function Customize() {
         <div className="bg-z-paper border-2 border-z-border p-3 sm:p-5 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] sm:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,0.2)] mb-4 sm:mb-6">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <div>
-              <p className="text-[11px] sm:text-[13px] font-display font-black uppercase tracking-tight text-z-ink">Upload your image & customize</p>
+              <p className="text-[11px] sm:text-[13px] font-display   uppercase tracking-tight text-z-ink">Upload your image & customize</p>
               <p className="text-[9px] sm:text-[11px] font-mono text-z-ink/60 dark:text-z-ink/70 uppercase tracking-wider mt-1">Choose size, orientation & style after adding a page</p>
             </div>
             <button onClick={() => editor.addPage(presetSize || undefined)} className="sticker-btn bg-z-ink text-z-paper text-[10px] sm:text-[11px] px-4 sm:px-5 py-2 sm:py-2.5 inline-flex items-center gap-2 active:scale-95 w-full sm:w-auto justify-center">
@@ -300,7 +300,7 @@ export default function Customize() {
           <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-2 mb-4 sm:mb-6">
             {pages.map((page, idx) => (
               <button key={page.id} onClick={() => editor.setActivePageIdx(idx)}
-                className={`px-4 py-2 text-[11px] font-mono font-black uppercase border-2 transition-all flex items-center gap-2 active:scale-95 ${
+                className={`px-4 py-2 text-[11px] font-mono   uppercase border-2 transition-all flex items-center gap-2 active:scale-95 ${
                   activePageIdx === idx ? 'bg-z-ink text-z-paper border-z-ink' : 'bg-z-paper text-z-ink border-z-border hover:border-z-ink'
                 }`}>
                 P{idx + 1} &middot; {page.size}{page.orientation[0].toUpperCase()} &middot; {page.layout}
@@ -351,7 +351,7 @@ export default function Customize() {
 
               {/* CENTER - Canvas */}
               <div className="lg:col-span-8 flex flex-col items-center">
-                <div className="text-[10px] sm:text-[12px] font-mono font-black uppercase tracking-widest text-z-ink mb-3 truncate max-w-full">
+                <div className="text-[10px] sm:text-[12px] font-mono   uppercase tracking-widest text-z-ink mb-3 truncate max-w-full">
                   {activePage.size} {activePage.orientation}
                   {` \u00b7 ${activePage.layout} (${activePage.panelCount} sheets)`}
                   {' \u2014 '}
@@ -390,12 +390,12 @@ export default function Customize() {
                   )}
                   <div className="flex gap-2">
                     <button onClick={() => editor.setPreviewMode(true)} disabled={!activePage.hasImage}
-                      className="text-[11px] font-mono font-black uppercase border-2 border-z-border px-3 py-1.5 hover:bg-z-ink hover:text-z-paper transition-all disabled:opacity-30 flex items-center gap-1.5 active:scale-95">
+                      className="text-[11px] font-mono   uppercase border-2 border-z-border px-3 py-1.5 hover:bg-z-ink hover:text-z-paper transition-all disabled:opacity-30 flex items-center gap-1.5 active:scale-95">
                       <Eye className="w-3.5 h-3.5" /> Preview
                     </button>
                     {user?.is_admin && (
                       <button onClick={() => editor.exportPreview(token)} disabled={!activePage.hasImage}
-                        className="text-[11px] font-mono font-black uppercase border-2 border-z-border px-3 py-1.5 hover:bg-z-ink hover:text-z-paper transition-all disabled:opacity-30 flex items-center gap-1.5 active:scale-95">
+                        className="text-[11px] font-mono   uppercase border-2 border-z-border px-3 py-1.5 hover:bg-z-ink hover:text-z-paper transition-all disabled:opacity-30 flex items-center gap-1.5 active:scale-95">
                         <Download className="w-3.5 h-3.5" /> Save 300DPI
                       </button>
                     )}
@@ -447,7 +447,7 @@ export default function Customize() {
 
               {/* CENTER */}
               <div className="lg:col-span-6 flex flex-col items-center">
-                <div className="text-[10px] sm:text-[12px] font-mono font-black uppercase tracking-widest text-z-ink mb-3 truncate max-w-full">
+                <div className="text-[10px] sm:text-[12px] font-mono   uppercase tracking-widest text-z-ink mb-3 truncate max-w-full">
                   {activePage.size} {activePage.orientation}
                   {' \u2014 '}
                   {paperMm.w} &times; {paperMm.h} mm
@@ -486,12 +486,12 @@ export default function Customize() {
                   )}
                   <div className="flex gap-2">
                     <button onClick={() => editor.setPreviewMode(true)} disabled={!activePage.hasImage}
-                      className="text-[11px] font-mono font-black uppercase border-2 border-z-border px-3 py-1.5 hover:bg-z-ink hover:text-z-paper transition-all disabled:opacity-30 flex items-center gap-1.5 active:scale-95">
+                      className="text-[11px] font-mono   uppercase border-2 border-z-border px-3 py-1.5 hover:bg-z-ink hover:text-z-paper transition-all disabled:opacity-30 flex items-center gap-1.5 active:scale-95">
                       <Eye className="w-3.5 h-3.5" /> Preview
                     </button>
                     {user?.is_admin && (
                       <button onClick={() => editor.exportPreview(token)} disabled={!activePage.hasImage}
-                        className="text-[11px] font-mono font-black uppercase border-2 border-z-border px-3 py-1.5 hover:bg-z-ink hover:text-z-paper transition-all disabled:opacity-30 flex items-center gap-1.5 active:scale-95">
+                        className="text-[11px] font-mono   uppercase border-2 border-z-border px-3 py-1.5 hover:bg-z-ink hover:text-z-paper transition-all disabled:opacity-30 flex items-center gap-1.5 active:scale-95">
                         <Download className="w-3.5 h-3.5" /> Save 300DPI
                       </button>
                     )}
@@ -508,7 +508,7 @@ export default function Customize() {
         ) : (
           <div className="border-4 border-dashed border-z-border py-24 flex flex-col items-center justify-center">
             <Plus className="w-10 h-10 text-z-ink/30 dark:text-z-ink/40 mb-4" />
-            <p className="font-display font-black text-3xl uppercase tracking-tighter text-z-ink/60 dark:text-z-ink/70 italic">Create a page to start</p>
+            <p className="font-display   text-3xl uppercase tracking-tighter text-z-ink/60 dark:text-z-ink/70 italic">Create a page to start</p>
             <p className="font-mono text-[12px] uppercase tracking-widest text-z-ink/40 dark:text-z-ink/50 mt-2">Click ADD IMAGE above to begin</p>
           </div>
         )}

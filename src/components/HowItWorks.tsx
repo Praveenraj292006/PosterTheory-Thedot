@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { ArrowRight, Check, MousePointer2, Package, ShoppingBag, Truck } from "lucide-react";
+import TextReveal from "./Textreveal";
 
 const processSteps = [
   {
@@ -64,9 +65,9 @@ export default function HowItWorks() {
 
           <div>
 
-            <h2 className="font-[Bebas] text-5xl font-bold uppercase leading-[0.85] tracking-wide text-z-ink sm:text-6xl">
-              How It Works
-            </h2>
+           <TextReveal as="h2" className="font-display font-bold text-5xl  uppercase leading-[0.85] tracking-wide text-z-ink sm:text-6xl"> How It Works</TextReveal>
+             
+            
           </div>
 
          
@@ -194,7 +195,7 @@ export default function HowItWorks() {
 
                 </div>
 
-                <h3 className="max-w-lg font-display text-5xl font-black uppercase leading-[0.8] tracking-tighter text-z-ink sm:text-7xl">
+                <h3 className="max-w-lg font-display text-5xl  uppercase leading-[0.8] tracking-tighter text-z-ink sm:text-7xl">
                   {currentStep.title}
                   <span className="text-z-muted">.</span>
                 </h3>
@@ -446,9 +447,7 @@ export default function HowItWorks() {
 
             {/* Corner label */}
 
-            <div className="absolute bottom-5 left-5 font-mono text-[8px] uppercase tracking-[0.25em] text-white/30">
-              POSTER_THEORY // PROCESS
-            </div>
+            
 
             <div className="absolute right-5 top-5 font-mono text-[8px] uppercase tracking-[0.25em] text-white/30">
               LIVE

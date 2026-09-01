@@ -159,7 +159,7 @@ export default function Hero() {
           {/* Heading */}
           <h1
             ref={headingRef}
-            className="font-display font-black text-3xl sm:text-5xl lg:text-6xl uppercase tracking-tighter text-z-paper leading-[0.9] mb-4 sm:mb-6"
+            className="font-display  text-3xl sm:text-5xl lg:text-6xl uppercase tracking-tighter text-z-paper leading-[0.9] mb-4 sm:mb-6"
           >
             <span className="block overflow-hidden">
               <span className="hero-reveal-line block">

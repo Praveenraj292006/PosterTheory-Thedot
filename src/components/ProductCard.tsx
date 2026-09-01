@@ -3,6 +3,7 @@ import { motion } from "motion/react";
 import { ArrowRight, Heart, ShoppingBag, Eye } from "lucide-react";
 import { Link } from "react-router-dom";
 import ProductModal from "./ProductModal";
+import mockUp from '../assets/Mocup-A4.png'
 
 interface ProductProps {
   id: number;
@@ -39,117 +40,120 @@ export default function ProductCard(props: ProductProps) {
       <motion.article
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-50px" }}
-        transition={{ duration: 0.4 }}
-        className="group relative flex flex-col"
+        viewport={{ once: true, margin: "-60px" }}
+        transition={{ duration: 0.45 }}
+        className="group relative grid lg:grid-col-4  border-2  p-3 sm:p-4 bg-z-paper transition-colors duration-300 hover:bg-z-paper"
       >
-
-        {/* IMAGE */}
+        {/* PRODUCT IMAGE AREA */}
         <div className="relative">
-
+          {/* Wishlist */}
           <button
             type="button"
-            onClick={() => setLiked(!liked)}
+            onClick={(e) => {
+              e.stopPropagation();
+              setLiked(!liked);
+            }}
             aria-label={liked ? "Remove from wishlist" : "Add to wishlist"}
-            className="absolute top-3 right-3 z-30 w-9 h-9 flex items-center justify-center bg-z-paper/90 border border-z-border backdrop-blur-sm hover:bg-z-ink hover:text-z-paper transition-all"
+            className="absolute top-3 right-3 z-30 w-9 h-9 flex items-center justify-center bg-z-paper/90 border border-z-border text-z-ink backdrop-blur-sm opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300"
           >
-            <Heart
-              className={`w-4 h-4 ${
-                liked ? "fill-current" : ""
-              }`}
-            />
+            <Heart className={`w-4 h-4 ${liked ? "fill-current" : ""}`} />
           </button>
 
           {/* Poster */}
-          <div
-            className="relative aspect-[210/297] overflow-hidden border border-z-border bg-z-paper p-1 shadow-[5px_5px_0px_0px_var(--color-z-shadow)] transition-all duration-300 group-hover:shadow-[2px_2px_0px_0px_var(--color-z-shadow)] group-hover:translate-x-[3px] group-hover:translate-y-[3px]"
-          >
+          <div className="relative aspect-[4/5] overflow-hidden border  bg-black p-4  transition-all duration-500 ease-out group-hover:shadow-[8px_8px_0px_0px_var(--color-z-shadow)] group-hover:-translate-x-1 group-hover:-translate-y-1">
+            <div  onClick={(e) => {
+                  e.stopPropagation();
+                  setShowModal(true);
+                }}className="relative w-full h-full overflow-hidden bg-white">
+              {image ? (
+                <img
+                  src={image}
+                  alt={title}
+                  loading="lazy"
+                  className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.035]"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center bg-z-paper">
+                  <span className="font-mono text-[10px] text-z-muted uppercase tracking-widest">
+                    No Image
+                  </span>
+                </div>
+              )}
 
-            <div className="relative w-full h-full overflow-hidden bg-z-paper">
+              {/* Subtle image overlay */}
+              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-500" />
 
-              <img
-                src={image}
-                alt={title}
-                loading="lazy"
-                className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
-              />
-
-              {/* Hover overlay */}
-              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300" />
-
-              {/* Quick view */}
+              {/* Quick View */}
               <button
                 type="button"
-                onClick={() => setShowModal(true)}
-                className="absolute left-1/2 bottom-5 -translate-x-1/2 translate-y-3 opacity-0 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 bg-z-paper text-z-ink border border-z-border px-5 py-2.5 flex items-center gap-2 font-mono text-[10px] font-bold uppercase tracking-widest whitespace-nowrap"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowModal(true);
+                }}
+                className="absolute left-1/2 bottom-5 -translate-x-1/2 translate-y-4 opacity-0 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-400 bg-z-paper text-z-ink border border-z-border px-5 py-2.5 flex items-center gap-2 font-mono text-[9px] font-bold uppercase tracking-[0.15em] whitespace-nowrap shadow-[3px_3px_0px_0px_var(--color-z-shadow)]"
               >
                 <Eye className="w-3.5 h-3.5" />
                 Quick View
               </button>
-
             </div>
           </div>
 
-          {/* Layout badge */}
+          {/* Layout Badge */}
           {layout && layout !== "Single" && (
             <div className="absolute left-3 top-3 z-20 bg-z-ink text-z-paper px-2.5 py-1 text-[8px] font-mono font-bold uppercase tracking-widest">
               {layout}
             </div>
           )}
-
         </div>
 
         {/* PRODUCT INFORMATION */}
         <div className="pt-4 px-0.5">
-
           {/* Collection */}
-          <p className="text-[9px] font-mono font-bold uppercase tracking-[0.2em] text-z-muted mb-1.5">
+          <p className="text-[8px] sm:text-[9px] font-mono font-bold uppercase tracking-[0.22em] text-z-muted mb-1.5">
             {collection_name || "Poster Theory"}
           </p>
 
-          {/* Title */}
-          <Link
-            to={`/product/${id}`}
-            className="block"
-          >
-            <h3 className="font-display font-bold text-sm sm:text-base uppercase tracking-tight leading-tight text-z-ink hover:text-z-muted transition-colors line-clamp-2">
+          {/* Product Title */}
+          <Link to={`/product/${id}`} className="block">
+            <h3 className="font-display font-bold text-sm sm:text-[15px] uppercase tracking-tight leading-tight text-z-ink line-clamp-2 hover:text-z-muted transition-colors">
               {title}
             </h3>
           </Link>
 
-          {/* Price + Sizes */}
-          <div className="flex items-end justify-between gap-3 mt-3">
-
+          {/* Price + Action */}
+          <div className="flex items-end justify-between gap-3 mt-4">
             <div>
-              <p className="font-display font-black text-lg text-z-ink">
+              <p className="font-display font-black text-lg sm:text-xl text-z-ink leading-none">
                 ₹{displayPrice}
               </p>
 
               {available_sizes && available_sizes.length > 0 && (
-                <p className="text-[8px] font-mono uppercase tracking-widest text-z-muted mt-0.5">
-                  {available_sizes.length} sizes available
+                <p className="text-[8px] font-mono uppercase tracking-[0.12em] text-z-muted mt-1">
+                  {available_sizes.length} sizes
                 </p>
               )}
             </div>
 
-            {/* Add button */}
+            {/* Add to Cart */}
             <button
               type="button"
               onClick={() => setShowModal(true)}
-              className="group/cart flex items-center justify-center gap-2 bg-z-ink text-z-paper px-3 py-2.5 font-mono text-[9px] font-bold uppercase tracking-widest hover:bg-z-muted transition-colors"
+              className="flex items-center justify-center gap-2 bg-z-ink text-z-paper px-3 sm:px-4 py-2.5 font-mono text-[8px] sm:text-[9px] font-bold uppercase tracking-[0.15em] border border-z-ink hover:bg-transparent hover:text-z-ink transition-all duration-300"
             >
               <ShoppingBag className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">
-                Add
-              </span>
+              <span className="hidden sm:inline">Add</span>
             </button>
-
           </div>
+        </div>
 
+        {/* Product Number */}
+        <div className="absolute top-3 left-3 pointer-events-none">
+          <span className="font-mono text-[7px] text-z-muted/60 tracking-widest">
+            #{String(id).padStart(3, "0")}
+          </span>
         </div>
       </motion.article>
 
-      {/* PRODUCT MODAL */}
       {showModal && (
         <ProductModal
           product={props}
@@ -157,79 +161,5 @@ export default function ProductCard(props: ProductProps) {
         />
       )}
     </>
-  );
-}
-
-
-/* =========================================================
-   CATEGORY CARD
-========================================================= */
-
-interface CategoryCardProps {
-  title: string;
-  image: string;
-  path: string;
-}
-
-export function CategoryCard({
-  title,
-  image,
-  path,
-}: CategoryCardProps) {
-  return (
-    <Link
-      to={path}
-      className="group relative block"
-    >
-
-      <div className="relative aspect-[210/297] overflow-hidden border border-z-border bg-z-paper shadow-[6px_6px_0px_0px_var(--color-z-shadow)] transition-all duration-300 group-hover:shadow-[2px_2px_0px_0px_var(--color-z-shadow)] group-hover:translate-x-[4px] group-hover:translate-y-[4px]">
-
-        {/* Image */}
-        <div className="absolute inset-1 overflow-hidden">
-
-          {image ? (
-            <img
-              src={image}
-              alt={title}
-              loading="lazy"
-              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-            />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center bg-z-paper">
-              <span className="font-mono text-[10px] text-z-muted uppercase tracking-widest">
-                No Image
-              </span>
-            </div>
-          )}
-
-        </div>
-
-        {/* Gradient */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
-
-        {/* Content */}
-        <div className="absolute bottom-0 left-0 right-0 p-5">
-
-          <p className="font-mono text-[8px] font-bold uppercase tracking-[0.25em] text-white/60 mb-2">
-            Collection
-          </p>
-
-          <div className="flex items-end justify-between gap-3">
-
-            <h3 className="font-display font-black text-xl sm:text-2xl uppercase tracking-tighter leading-[0.9] text-white">
-              {title}
-            </h3>
-
-            <div className="shrink-0 w-9 h-9 border border-white bg-white text-black flex items-center justify-center transition-all duration-300 group-hover:bg-black group-hover:text-white group-hover:border-white">
-              <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-0.5" />
-            </div>
-
-          </div>
-
-        </div>
-
-      </div>
-
-    </Link>
   );
 }
