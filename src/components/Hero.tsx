@@ -143,7 +143,7 @@ export default function Hero() {
       {/* Background */}
       <div className="absolute w-full inset-0" />
 
-      <div className="relative w-full max-w-screen h-screen overflow-hidden md:rounded-none bg-linear-to-b from-black from-30% via-gray-900 via-70% to-gray-50 grid grid-cols-1 lg:grid-cols-[0.85fr_1.15fr] items-center z-10 lg:my-0">
+      <div className="relative w-full max-w-screen h-screen overflow-hidden md:rounded-none bg-z-ink grid grid-cols-1 lg:grid-cols-[0.85fr_1.15fr] items-center z-10 lg:my-0">
 
         {/* MOBILE POSTER BACKGROUND */}
         <div className="absolute inset-0 lg:hidden overflow-hidden pointer-events-none opacity-30">
