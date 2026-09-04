@@ -83,10 +83,10 @@ export default function Navbar({ cartCount = 0 }: NavbarProps) {
   ========================================================= */
   useEffect(() => {
     api
-      .get("/api/auth/me")
-      .then((res) => setUser(res.data || null))
-      .catch(() => setUser(null))
-      .finally(() => setAuthChecked(true));
+  .get("/api/auth/me")
+  .then((res) => setUser(res.data?.user || null))
+  .catch(() => setUser(null))
+  .finally(() => setAuthChecked(true));
   }, []);
 
   const handleLogout = () => {
@@ -124,9 +124,9 @@ export default function Navbar({ cartCount = 0 }: NavbarProps) {
   const menuItems = [
     { name: "Frames", path: "/frames" },
     { name: "Split Posters", path: "/split-posters" },
+    { name: "Metalic Posters", path: "/metalic-posters" },
     { name: "Customize", path: "/customize" },
-    { name: "Buy in Bulk", path: "/bulk" },
-    { name: "About Us", path: "/about" },
+    { name: "Buy in Bulk", path: "/bulk-inquiry" },
     { name: "Reviews", path: "/reviews" },
     { name: "Help Center", path: "/help" },
   ];
@@ -144,8 +144,9 @@ export default function Navbar({ cartCount = 0 }: NavbarProps) {
 
   return (
     <>
-      <header className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-300 ${scrolled ? "bg-black/95 backdrop-blur-xl border-b border-white/10" : "bg-black border-b border-white/10"}`}>
-        <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+   
+      <header className={`fixed border-dashed border-b border-white top-0 left-0 right-0 z-[100] transition-all duration-300 ${scrolled ? "bg-black/95 backdrop-blur-xl border-b-0" : "bg-black "}`}>
+        <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 ">
           <div className="h-[80px] flex items-center justify-between relative">
 
             {/* LEFT — LOGO */}
@@ -325,6 +326,7 @@ export default function Navbar({ cartCount = 0 }: NavbarProps) {
           )}
         </AnimatePresence>
       </header>
+    
     </>
   );
 }

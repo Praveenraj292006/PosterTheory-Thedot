@@ -18,9 +18,14 @@ import Signup from './pages/Signup';
 import Dashboard from './pages/Dashboard';
 import Admin from './pages/Admin';
 import Story from './pages/Story';
+import SplitPosters from './pages/SplitPosters';
+import BulkInquiry from './pages/BulkInquiry';
+import BulkInquiryForm from './pages/Bulkinquiryform ';
 import AuthCallback from './pages/AuthCallback';
+import Reviews from './pages/Reviews ';
 import SetPassword from './pages/SetPassword';
 import ForgotPassword from './pages/ForgotPassword';
+import MetallicPosters from './pages/Metallicposters ';
 import Help from './pages/Help';
 import Frames from './pages/Frames';
 
@@ -47,14 +52,19 @@ function AppContent() {
       <Navbar />
       <main className="flex-grow">
         <Routes>
+          <Route path="/bulk-inquiry" element={<BulkInquiry/>} />
+          <Route path="/bulk-inquiry/form" element={<BulkInquiryForm />} />
           <Route path="/" element={<Home />} />
           <Route path="/collection" element={<Shop />} />
           <Route path="/shop" element={<Navigate to="/collection" />} />
           <Route path="/customize" element={<Customize />} />
           <Route path="/story" element={<Navigate to="/" />} />
           <Route path="/help" element={<Help />} />
+          <Route path="/split-posters" element={<SplitPosters/>}/>
+          <Route path="/reviews" element={<Reviews/>}/>
           <Route path="/frames" element={<Frames />} />
           <Route path="/faqs" element={<Help />} />
+          <Route path="/metalic-posters" element={<MetallicPosters/>}/>
           <Route path="/cart" element={<Cart />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />

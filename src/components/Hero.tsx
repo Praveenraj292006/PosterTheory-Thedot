@@ -242,7 +242,7 @@ export default function Hero() {
         </div>
 
         {/* DESKTOP POSTER COLLAGE */}
-        <div className="hidden lg:block relative h-full w-full overflow-hidden bg-transparent">
+        <div className="hidden lg:block relative h-full w-full overflow-hidden bg-transparent z-15">
           <PosterCollage images={images} />
         </div>
       </div>

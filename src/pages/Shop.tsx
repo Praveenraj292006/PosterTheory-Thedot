@@ -342,7 +342,7 @@ export default function Shop() {
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-x-6 gap-y-12">
                 {[1,2,3,4,5,6,7,8].map(i => (
                   <div key={i} className="animate-pulse">
-                    <div className="aspect-[200/240] bg-z-border/10 border-2 border-z-border mb-4" />
+                    <div className="aspect-[200/240] bg-z-border/10  border-z-border mb-4" />
                     <div className="h-3 bg-z-border/10 border border-z-border w-2/3 mb-2" />
                     <div className="h-3 bg-z-border/10 border border-z-border w-1/3" />
                   </div>

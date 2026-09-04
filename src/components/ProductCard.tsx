@@ -42,7 +42,7 @@ export default function ProductCard(props: ProductProps) {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-60px" }}
         transition={{ duration: 0.45 }}
-        className="group relative grid lg:grid-col-4  border-2  p-3 sm:p-4 bg-z-paper transition-colors duration-300 hover:bg-z-paper"
+        className="group relative grid lg:grid-col-4   p-3 sm:p-4 bg-z-paper transition-colors duration-300 hover:bg-z-paper"
       >
         {/* PRODUCT IMAGE AREA */}
         <div className="relative">
@@ -107,7 +107,7 @@ export default function ProductCard(props: ProductProps) {
         </div>
 
         {/* PRODUCT INFORMATION */}
-        <div className="pt-4 px-0.5">
+        <div className="pt-4 px-0.5 flex flex-col items-center justify-center">
           {/* Collection */}
           <p className="text-[8px] sm:text-[9px] font-mono font-bold uppercase tracking-[0.22em] text-z-muted mb-1.5">
             {collection_name || "Poster Theory"}
@@ -115,7 +115,7 @@ export default function ProductCard(props: ProductProps) {
 
           {/* Product Title */}
           <Link to={`/product/${id}`} className="block">
-            <h3 className="font-display font-bold text-sm sm:text-[15px] uppercase tracking-tight leading-tight text-z-ink line-clamp-2 hover:text-z-muted transition-colors">
+            <h3 className="font-display font-bold text-sm sm:text-[15px] uppercase tracking-tight leading-tigh  text-z-ink line-clamp-2 hover:text-z-muted transition-colors">
               {title}
             </h3>
           </Link>
