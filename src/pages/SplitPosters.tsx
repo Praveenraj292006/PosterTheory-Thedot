@@ -4,7 +4,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import api from '../lib/api';
 import ProductCard from '../components/ProductCard';
 import SplitPostersHero, { type SplitPosterImages } from '../components/SplitHero';
-import mockUp from '../assets/Mocup-A4.png';
+import mocUp from '../assets/Mocup-A4.png';
 import Customize from '../components/Customize';
 import left from '../assets/Split-poster/porche-left.png'
 import mid from '../assets/Split-poster/porche-mid.png'
@@ -70,7 +70,7 @@ export default function SplitPosters() {
 
   return (
     <div className="min-h-screen pb-32">
-      <SplitPostersHero loading={!pageReady} images={heroImages} fallbackImage={mockUp} />
+      <SplitPostersHero loading={!pageReady} images={heroImages} fallbackImage={mocUp} />
 
       <div className="max-w-[1440px] mx-auto px-6 pt-20">
         <div className="flex items-end justify-between gap-6 flex-wrap mb-10 border-b-2 border-z-border pb-6">
