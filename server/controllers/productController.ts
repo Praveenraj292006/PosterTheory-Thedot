@@ -96,3 +96,96 @@ export const getHomepageData = async (req: Request, res: Response) => {
     res.status(500).json({ error: "Failed to fetch homepage data" });
   }
 };
+
+
+//Get Similar Product for the product page
+export const getSimilarProducts = async (req: Request, res: Response) => {
+  try {
+    const productId = parseInt(req.params.id, 10);
+
+    if (isNaN(productId)) {
+      return res.status(400).json({
+        error: "Invalid product ID",
+      });
+    }
+
+    const limit = Math.min(
+      parseInt(req.query.limit as string, 10) || 8,
+      20
+    );
+
+    const { rows } = await pool.query(
+      `
+      WITH current_product AS (
+        SELECT
+          id,
+          collection_id,
+          tags
+        FROM products
+        WHERE id = $1
+          AND status = 'active'
+      )
+
+      SELECT
+        p.*,
+        c.name AS collection_name,
+        c.slug AS collection_slug,
+
+        -- Number of tags shared with current product
+        cardinality(
+          ARRAY(
+            SELECT UNNEST(p.tags)
+            INTERSECT
+            SELECT UNNEST(cp.tags)
+          )
+        ) AS matching_tags,
+
+        -- Final similarity score
+        (
+          cardinality(
+            ARRAY(
+              SELECT UNNEST(p.tags)
+              INTERSECT
+              SELECT UNNEST(cp.tags)
+            )
+          ) * 10
+          +
+          CASE
+            WHEN p.collection_id = cp.collection_id THEN 3
+            ELSE 0
+          END
+        ) AS similarity_score
+
+      FROM products p
+
+      CROSS JOIN current_product cp
+
+      LEFT JOIN collections c
+        ON p.collection_id = c.id
+
+      WHERE p.id <> cp.id
+        AND p.status = 'active'
+
+        -- Product must share at least one tag
+        AND p.tags && cp.tags
+
+      ORDER BY
+        similarity_score DESC,
+        p.is_featured DESC,
+        p.is_trending DESC,
+        p.created_at DESC
+
+      LIMIT $2
+      `,
+      [productId, limit]
+    );
+
+    res.json(rows);
+  } catch (err) {
+    console.error("getSimilarProducts error:", err);
+
+    res.status(500).json({
+      error: "Failed to fetch similar products",
+    });
+  }
+};

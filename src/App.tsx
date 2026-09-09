@@ -8,6 +8,9 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import { usePageTracker } from './hooks/usePageTracker';
 
+//Page Transition
+import PageTransition from './components/PageTransition';
+
 // Pages
 import Home from './pages/Home';
 import Shop from './pages/Shop';
@@ -51,6 +54,7 @@ function AppContent() {
     <div className="flex flex-col min-h-screen">
       <Navbar />
       <main className="flex-grow">
+      <PageTransition>
         <Routes>
           <Route path="/bulk-inquiry" element={<BulkInquiry/>} />
           <Route path="/bulk-inquiry/form" element={<BulkInquiryForm />} />
@@ -90,6 +94,7 @@ function AppContent() {
           {/* Fallback */}
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
+        </PageTransition>
       </main>
       <Footer />
     </div>

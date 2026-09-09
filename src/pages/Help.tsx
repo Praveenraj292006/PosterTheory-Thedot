@@ -1,13 +1,20 @@
-
 import { ChevronDown, Mail, Phone, Clock } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
-import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
+import React, { useState, useEffect, useLayoutEffect, useRef,createPortal } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { AnimatePresence, motion } from "motion/react";
 import { X } from "lucide-react";
 
 gsap.registerPlugin(ScrollTrigger);
+
+const POLICIES = [
+  "Terms & Conditions",
+  "Privacy Policy",
+  "Shipping Policy",
+  "Return & Refund Policy",
+  "Cancellation Policy",
+];
 
 const FAQ_SECTIONS = [
   { section: 'GENERAL', id: 'general', items: [
@@ -149,7 +156,7 @@ tl.to(".help-line", {
         "-=0.4"
       );
 
-    // FAQ sections
+    // Policies / FAQ sections
     gsap.utils.toArray(".help-section").forEach((section) => {
       gsap.fromTo(
         section,
@@ -171,7 +178,7 @@ tl.to(".help-line", {
       );
     });
 
-    // Sidebar cards
+    // Contact card
     gsap.utils.toArray(".help-card").forEach((card, index) => {
       gsap.fromTo(
         card,
@@ -213,29 +220,55 @@ tl.to(".help-line", {
   }, [hash]);
 
   return (
-    <div  ref={pageRef} className="pt-24 sm:pt-40 pb-32 min-h-screen">
+    <div ref={pageRef} className="pt-24 sm:pt-40 pb-32 min-h-screen">
       <div className="max-w-[1440px] mx-auto px-6">
 
-        <header  ref={heroRef} className="mb-24 text-center border-b-4 border-z-border pb-16">
+        <header ref={heroRef} className="mb-24 text-center border-b-4 border-z-border pb-16">
           <span className="help-reveal text-[14px] font-mono uppercase tracking-[0.5em] text-z-muted font-black mb-10 block underline decoration-4 underline-offset-8">
             HELP_CENTER
           </span>
           <h1 className="help-reveal help-title font-display font-bold text-6xl md:text-9xl tracking-tighter uppercase leading-[0.85] italic">
             HOW_CAN_WE<br />
-            <span >HELP_YOU?</span>
+            <span>HELP_YOU?</span>
           </h1>
           <div className="help-line h-1 bg-z-ink mt-8 max-w-[300px]" />
         </header>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-16">
+        <div className="max-w-[900px] mx-auto space-y-24">
 
-          <div className="lg:col-span-2 space-y-16">
-           {FAQ_SECTIONS.map((sec) => (
-            <div
-              key={sec.section}
-              id={sec.id}
-              className="help-section"
-            >
+          {/* POLICIES — TOP */}
+          <section id="policies" className="help-section">
+            <div className="flex items-center gap-4 mb-6">
+              <span className="text-[13px] font-mono font-black uppercase tracking-[0.4em] text-z-ink border-b-2 border-z-border pb-1">
+                POLICIES
+              </span>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-t-2 border-z-border pt-6">
+              {POLICIES.map((policy) => (
+                <button
+                  key={policy}
+                  type="button"
+                  onClick={() => setSelectedPolicy(policy)}
+                  className="border-2 border-z-border p-5 text-left font-mono text-xs font-bold uppercase tracking-widest flex items-center justify-between gap-3 shadow-[4px_4px_0px_0px_var(--color-z-shadow)] hover:bg-z-ink hover:text-z-paper transition-colors"
+                >
+                  <span className="flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 bg-current inline-block shrink-0" />
+                    {policy}
+                  </span>
+                  <ChevronDown className="w-4 h-4 -rotate-90 shrink-0" />
+                </button>
+              ))}
+            </div>
+          </section>
+
+          {/* FAQ — MIDDLE */}
+          <div className="space-y-16">
+            {FAQ_SECTIONS.map((sec) => (
+              <div
+                key={sec.section}
+                id={sec.id}
+                className="help-section"
+              >
                 <button
                   onClick={() => setActiveSection(activeSection === sec.section ? null : sec.section)}
                   className="flex items-center gap-4 mb-6 group"
@@ -258,60 +291,32 @@ tl.to(".help-line", {
             ))}
           </div>
 
-          <aside className="space-y-8 lg:sticky lg:top-32 self-start">
-            <div className="help-card border-2 border-z-border p-8 shadow-[6px_6px_0px_0px_var(--color-z-shadow)]">
-              <h2 className="font-display font-black uppercase tracking-widest text-lg italic mb-8 border-b-2 border-z-border pb-4">
-                CONTACT_SUPPORT
-              </h2>
-              <ul className="space-y-6 font-mono text-sm font-bold uppercase tracking-widest">
-                <li className="flex items-start gap-4">
-                  <Mail className="w-5 h-5 shrink-0 mt-0.5" />
-                  <a href="mailto:support@postertheory.in" className="text-z-muted hover:text-z-ink transition-colors break-all normal-case">
-                    support@postertheory.in
-                  </a>
-                </li>
-                <li className="flex items-start gap-4">
-                  <Phone className="w-5 h-5 shrink-0 mt-0.5" />
-                  <span className="text-z-muted">+91 XXXXXXXXXX</span>
-                </li>
-                <li className="flex items-start gap-4">
-                  <Clock className="w-5 h-5 shrink-0 mt-0.5" />
-                  <span className="text-z-muted">Mon – Sat<br />10:00 AM – 7:00 PM</span>
-                </li>
-              </ul>
-            </div>
-
-            <div className="help-card border-2 border-z-border p-8 shadow-[6px_6px_0px_0px_var(--color-z-shadow)]">
-  <h2 className="font-display font-black uppercase tracking-widest text-lg italic mb-6 border-b-2 border-z-border pb-4">
-    POLICIES
-  </h2>
-
-  <ul className="space-y-4 font-mono text-sm font-bold uppercase tracking-widest text-z-muted">
-    {[
-      "Terms & Conditions",
-      "Privacy Policy",
-      "Shipping Policy",
-      "Return & Refund Policy",
-      "Cancellation Policy",
-    ].map((policy) => (
-      <li key={policy}>
-        <button
-          type="button"
-          onClick={() => setSelectedPolicy(policy)}
-          className="hover:text-z-ink transition-colors flex items-center gap-2 text-left w-full"
-        >
-          <span className="w-1.5 h-1.5 bg-z-ink inline-block shrink-0" />
-          {policy}
-        </button>
-      </li>
-    ))}
-  </ul>
-</div>
-          </aside>
+          {/* CONTACT US — BOTTOM */}
+          <section id="contact" className="help-card border-2 border-z-border p-8 sm:p-12 shadow-[6px_6px_0px_0px_var(--color-z-shadow)]">
+            <h2 className="font-display font-black uppercase tracking-widest text-lg italic mb-8 border-b-2 border-z-border pb-4">
+              CONTACT_SUPPORT
+            </h2>
+            <ul className="grid grid-cols-1 sm:grid-cols-3 gap-8 font-mono text-sm font-bold uppercase tracking-widest">
+              <li className="flex items-start gap-4">
+                <Mail className="w-5 h-5 shrink-0 mt-0.5" />
+                <a href="mailto:support@postertheory.in" className="text-z-muted hover:text-z-ink transition-colors break-all normal-case">
+                  support@postertheory.in
+                </a>
+              </li>
+              <li className="flex items-start gap-4">
+                <Phone className="w-5 h-5 shrink-0 mt-0.5" />
+                <span className="text-z-muted">+91 XXXXXXXXXX</span>
+              </li>
+              <li className="flex items-start gap-4">
+                <Clock className="w-5 h-5 shrink-0 mt-0.5" />
+                <span className="text-z-muted">Mon – Sat<br />10:00 AM – 7:00 PM</span>
+              </li>
+            </ul>
+          </section>
 
         </div>
       </div>
-       <PolicyModal
+      <PolicyModal
         policy={selectedPolicy}
         onClose={() => setSelectedPolicy(null)}
       />
@@ -325,59 +330,144 @@ function PolicyModal({
   policy: string | null;
   onClose: () => void;
 }) {
+  useEffect(() => {
+    if (!policy) return;
+
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+    };
+  }, [policy]);
+
   return (
     <AnimatePresence>
       {policy && (
         <motion.div
-          className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6"
+          className="fixed top-10 left-0 w-screen h-screen z-[999999]"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
+          transition={{ duration: 0.25, ease: "easeOut" }}
+          onClick={onClose}
         >
+
           {/* BACKDROP */}
           <motion.div
-            className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+            
+            className="absolute top-0 left-0 w-full h-full bg-black/80 backdrop-blur-sm"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={onClose}
+            transition={{ duration: 0.3 }}
+            
           />
 
-          {/* MODAL */}
-          <motion.div
-            className="relative z-10 w-full max-w-[900px] max-h-[90vh] overflow-hidden border-2 border-z-border bg-z-paper shadow-[10px_10px_0px_0px_var(--color-z-shadow)]"
-            initial={{ opacity: 0, y: 60, scale: 0.96 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 30, scale: 0.97 }}
-            transition={{ duration: 0.4, ease: "easeOut" }}
-          >
-            {/* HEADER */}
-            <div className="flex items-center justify-between gap-4 border-b-2 border-z-border p-5 sm:p-7">
-              <div>
-                <p className="font-mono text-[9px] uppercase tracking-[0.3em] text-z-muted mb-2">
-                  POSTER_THEORY / LEGAL
-                </p>
+          {/* CENTER WRAPPER */}
+          <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center p-4 sm:p-6">
 
-                <h2 className="font-display font-black text-2xl sm:text-4xl uppercase tracking-tighter text-z-ink">
-                  {policy}
-                </h2>
-              </div>
+            {/* MODAL */}
+            <motion.div
+            onClick={(e) => e.stopPropagation()}
+            className="relative w-full max-w-[900px] max-h-[90vh] overflow-hidden border-2 border-z-border bg-z-paper shadow-[10px_10px_0px_0px_var(--color-z-shadow)]"
+              initial={{
+                opacity: 0,
+                y: 50,
+                scale: 0.94,
+              }}
+              animate={{
+                opacity: 1,
+                y: 0,
+                scale: 1,
+              }}
+              exit={{
+                opacity: 0,
+                y: 30,
+                scale: 0.96,
+              }}
+              transition={{
+                duration: 0.45,
+                ease: [0.16, 1, 0.3, 1],
+              }}
+            >
 
-              <button
-                type="button"
-                onClick={onClose}
-                aria-label="Close policy"
-                className="shrink-0 w-10 h-10 border-2 border-z-border flex items-center justify-center hover:bg-z-ink hover:text-z-paper transition-colors"
+              {/* HEADER */}
+              <motion.div
+                className="flex items-center justify-between gap-4 border-b-2 border-z-border p-5 sm:p-7"
+                initial={{ opacity: 0, y: -15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{
+                  delay: 0.15,
+                  duration: 0.35,
+                  ease: "easeOut",
+                }}
               >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
+                <div>
+                  <motion.p
+                    className="font-mono text-[9px] uppercase tracking-[0.3em] text-z-muted mb-2"
+                    initial={{ opacity: 0, x: -15 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.2, duration: 0.3 }}
+                  >
+                    POSTER_THEORY / LEGAL
+                  </motion.p>
 
-            {/* POLICY CONTENT */}
-            <div className="overflow-y-auto max-h-[calc(90vh-120px)] p-5 sm:p-8 md:p-10">
-              <PolicyContent policy={policy} />
-            </div>
-          </motion.div>
+                  <motion.h2
+                    className="font-display font-black text-2xl sm:text-4xl uppercase tracking-tighter text-z-ink"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{
+                      delay: 0.25,
+                      duration: 0.4,
+                      ease: "easeOut",
+                    }}
+                  >
+                    {policy}
+                  </motion.h2>
+                </div>
+
+                {/* CLOSE BUTTON */}
+                <motion.button
+                  type="button"
+                  onClick={onClose}
+                  aria-label="Close policy"
+                  className="shrink-0 w-10 h-10 border-2 border-z-border flex items-center justify-center hover:bg-z-ink hover:text-z-paper transition-colors"
+                  initial={{ opacity: 0, rotate: -45, scale: 0.7 }}
+                  animate={{ opacity: 1, rotate: 0, scale: 1 }}
+                  transition={{
+                    delay: 0.25,
+                    duration: 0.35,
+                    ease: "backOut",
+                  }}
+                  whileHover={{
+                    scale: 1.08,
+                    rotate: 90,
+                  }}
+                  whileTap={{
+                    scale: 0.9,
+                  }}
+                >
+                  <X className="w-5 h-5" />
+                </motion.button>
+              </motion.div>
+
+              {/* CONTENT */}
+              <motion.div
+                className="overflow-y-auto max-h-[calc(90vh-120px)] p-5 sm:p-8 md:p-10"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{
+                  delay: 0.2,
+                  duration: 0.4,
+                  ease: "easeOut",
+                }}
+              >
+                <PolicyContent policy={policy} />
+              </motion.div>
+
+            </motion.div>
+          </div>
         </motion.div>
       )}
     </AnimatePresence>
