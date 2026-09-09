@@ -4,7 +4,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import api from '../lib/api';
 import ProductCard from '../components/ProductCard';
 import MetallicPostersHero from '../components/Metallicpostershero ';
-import mockUp from '../assets/Mocup-A4.png';
+import mocUp from '../assets/Mocup-A4.png';
 
 interface Product {
   id: number;
@@ -60,7 +60,7 @@ export default function MetallicPosters() {
 
   return (
     <div className="min-h-screen pb-32">
-      <MetallicPostersHero loading={!pageReady} image={heroImage} fallbackImage={mockUp} />
+      <MetallicPostersHero loading={!pageReady} image={heroImage} fallbackImage={mocUp} />
 
       <div className="max-w-[1440px] mx-auto px-6 pt-20">
         <div className="flex items-end justify-between gap-6 flex-wrap mb-10 border-b-2 border-z-border pb-20">
