@@ -34,6 +34,7 @@ export default function ProductCard(props: ProductProps) {
   const [liked, setLiked] = useState(false);
 
   const displayPrice = price ?? 0;
+  
 
   return (
     <>

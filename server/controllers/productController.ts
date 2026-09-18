@@ -189,3 +189,153 @@ export const getSimilarProducts = async (req: Request, res: Response) => {
     });
   }
 };
+
+export const getTrendingProducts = async (req: Request, res: Response) => {
+  
+  try {
+    const limit = Math.min(
+      parseInt(req.query.limit as string, 10) || 8,
+      20
+    );
+
+    const { rows } = await pool.query(
+      `
+      SELECT
+        p.*,
+        c.name AS collection_name,
+        c.slug AS collection_slug,
+        COUNT(e.id) AS popularity_score
+      FROM product_order_events e
+      JOIN products p
+        ON p.id = e.product_id
+      LEFT JOIN collections c
+        ON p.collection_id = c.id
+      WHERE
+        p.status = 'active'
+        AND e.created_at >= NOW() - INTERVAL '7 days'
+      GROUP BY
+        p.id,
+        c.name,
+        c.slug
+      ORDER BY
+        popularity_score DESC,
+        p.created_at DESC
+      LIMIT $1
+      `,
+      [limit]
+    );
+
+    res.json(rows);
+  } catch (err) {
+    console.error("getTrendingProducts error:", err);
+
+    res.status(500).json({
+      error: "Failed to fetch trending products",
+    });
+  }
+};
+
+export const getNewArrivals = async (req: Request, res: Response) => {
+  try {
+    const limit = Math.min(
+      parseInt(req.query.limit as string, 10) || 8,
+      20
+    );
+
+    const { rows } = await pool.query(
+      `
+      SELECT *
+      FROM (
+        SELECT
+          p.*,
+          c.name AS collection_name,
+          c.slug AS collection_slug,
+
+          SPLIT_PART(p.image_folder, '/', 3) AS category,
+
+          ROW_NUMBER() OVER (
+            PARTITION BY SPLIT_PART(p.image_folder, '/', 3)
+            ORDER BY p.created_at DESC
+          ) AS row_num
+
+        FROM products p
+
+        LEFT JOIN collections c
+          ON p.collection_id = c.id
+
+        WHERE
+          p.status = 'active'
+          AND p.image_folder IS NOT NULL
+      ) ranked
+
+      WHERE row_num = 1
+
+      ORDER BY created_at DESC
+
+      LIMIT $1
+      `,
+      [limit]
+    );
+
+    res.json(rows);
+  } catch (err) {
+    console.error("getNewArrivals error:", err);
+
+    res.status(500).json({
+      error: "Failed to fetch new arrivals",
+    });
+  }
+};
+
+export const getBestsellerProducts = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const limit = Math.min(
+      parseInt(req.query.limit as string, 10) || 8,
+      20
+    );
+
+    const { rows } = await pool.query(
+      `
+      SELECT
+        p.*,
+        c.name AS collection_name,
+        c.slug AS collection_slug,
+        COUNT(e.id) AS popularity_score
+      FROM product_order_events e
+
+      JOIN products p
+        ON p.id = e.product_id
+
+      LEFT JOIN collections c
+        ON p.collection_id = c.id
+
+      WHERE
+        p.status = 'active'
+        AND e.created_at >= DATE_TRUNC('month', CURRENT_TIMESTAMP)
+
+      GROUP BY
+        p.id,
+        c.name,
+        c.slug
+
+      ORDER BY
+        popularity_score DESC,
+        p.created_at DESC
+
+      LIMIT $1
+      `,
+      [limit]
+    );
+
+    res.json(rows);
+  } catch (err) {
+    console.error("getBestsellerProducts error:", err);
+
+    res.status(500).json({
+      error: "Failed to fetch bestseller products",
+    });
+  }
+};

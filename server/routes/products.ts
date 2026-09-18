@@ -1,9 +1,22 @@
 import express from "express";
-import { getProducts, getProductPricing, getCustomizeConfig, getPublicCollections, getPublicLayouts, getHomepageData } from "../controllers/productController.ts";
+import {
+  getProducts,
+  getTrendingProducts,
+  getNewArrivals,
+  getBestsellerProducts,
+  getProductPricing,
+  getCustomizeConfig,
+  getPublicCollections,
+  getPublicLayouts,
+  getHomepageData
+} from "../controllers/productController.ts";
 
 const router = express.Router();
 
 router.get("/", getProducts);
+router.get("/trending", getTrendingProducts);
+router.get("/new-arrivals", getNewArrivals);
+router.get("/bestsellers", getBestsellerProducts);
 router.get("/pricing", getProductPricing);
 router.get("/customize-config", getCustomizeConfig);
 router.get("/collections", getPublicCollections);

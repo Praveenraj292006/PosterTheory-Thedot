@@ -29,6 +29,19 @@ const sanitizeText = (val: any, maxLen = 500): string => {
   return val.trim().slice(0, maxLen);
 };
 
+const normalizeTags = (tags: unknown): string[] => {
+  if (!Array.isArray(tags)) return [];
+
+  return [
+    ...new Set(
+      tags
+        .filter((tag): tag is string => typeof tag === "string")
+        .map(tag => tag.trim().toLowerCase())
+        .filter(Boolean)
+    ),
+  ];
+};
+
 // ========== DASHBOARD ==========
 export const getDashboard = async (req: Request, res: Response) => {
   try {
@@ -81,11 +94,30 @@ export const getCollections = async (req: Request, res: Response) => {
 
 export const createCollection = async (req: Request, res: Response) => {
   const name = sanitizeText(req.body.name, 100);
+
+  // New: get and normalize default tags
+  const default_tags = Array.isArray(req.body.default_tags)
+    ? [
+        ...new Set(
+          req.body.default_tags
+            .filter((tag: any) => typeof tag === "string")
+            .map((tag: string) => tag.trim().toLowerCase())
+            .filter(Boolean)
+        ),
+      ]
+    : [];
+
   if (!name || name.length < 2) return res.status(400).json({ error: "Name must be at least 2 characters" });
+
   const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+
   if (!slug) return res.status(400).json({ error: "Invalid collection name" });
+
   try {
-    const { rows } = await pool.query("INSERT INTO collections (name, slug) VALUES ($1, $2) RETURNING *", [name, slug]);
+    const { rows } = await pool.query(
+      "INSERT INTO collections (name, slug, default_tags) VALUES ($1, $2, $3) RETURNING *",
+      [name, slug, default_tags]
+    );
 
     // Create local folder
     ensureCollectionFolder(slug);
@@ -783,3 +815,5 @@ export const deleteCourier = async (req: Request, res: Response) => {
   await pool.query("DELETE FROM couriers WHERE id = $1", [cId]);
   res.json({ message: "Deleted" });
 };
+
+

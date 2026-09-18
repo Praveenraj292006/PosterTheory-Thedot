@@ -107,11 +107,47 @@ export const createOrder = async (req: any, res: Response) => {
     }
 
     const { rows } = await pool.query(
-      "INSERT INTO orders (user_id, total, status, items, address_id) VALUES ($1, $2, $3, $4, $5) RETURNING *",
-      [user_id, serverTotal, "order_placed", JSON.stringify(processedItems), address_id]
-    );
+  "INSERT INTO orders (user_id, total, status, items, address_id) VALUES ($1, $2, $3, $4, $5) RETURNING *",
+  [user_id, serverTotal, "order_placed", JSON.stringify(processedItems), address_id]
+);
 
-    res.status(201).json(rows[0]);
+const order = rows[0];
+
+console.log("========== POPULARITY DEBUG ==========");
+console.log("Created order ID:", order.id);
+console.log("Processed items:", JSON.stringify(processedItems, null, 2));
+
+const productIds = [
+  ...new Set(
+    processedItems
+      .filter((item: any) => !item.isCustom && item.id)
+      .map((item: any) => Number(item.id))
+      .filter((id: number) => Number.isInteger(id) && id > 0)
+  )
+];
+
+console.log("Product IDs:", productIds);
+
+for (const productId of productIds) {
+  console.log("Trying to create event for product:", productId);
+
+  const result = await pool.query(
+    `INSERT INTO product_order_events (product_id, order_id, user_id)
+     SELECT id, $2, $3
+     FROM products
+     WHERE id = $1
+       AND status = 'active'
+     ON CONFLICT (order_id, product_id) DO NOTHING
+     RETURNING *`,
+    [productId, order.id, user_id]
+  );
+
+  console.log("Event insert result:", result.rows);
+}
+
+console.log("========== END POPULARITY DEBUG ==========");
+
+res.status(201).json(order);
   } catch (err) {
     console.error("Create order error:", err);
     res.status(500).json({ error: "Failed to create order" });

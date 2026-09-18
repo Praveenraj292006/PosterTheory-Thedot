@@ -54,42 +54,211 @@ useEffect(() => {
 }, []);
 
   useEffect(() => {
-    Promise.all([
-      api.get('/api/products/collections'),
-      api.get('/api/products/homepage'),
-    ]).then(([catRes, hpRes]) => {
+  Promise.all([
+    api.get('/api/products/collections'),
+    api.get('/api/products/homepage'),
+  ])
+    .then(([catRes, hpRes]) => {
       const dbCats = Array.isArray(catRes.data) ? catRes.data : [];
-      const savedCats: any[] = hpRes.data?.collection_images?.collections || [];
+
+      const savedCats: any[] =
+        hpRes.data?.collection_images?.collections || [];
+
       const merged = dbCats.map((c: any) => {
         const saved = savedCats.find((s: any) => s.name === c.name);
-        return { name: c.name, img: saved?.img || '', path: `/collection?collection=${c.name}` };
+
+        return {
+          name: c.name,
+          img: saved?.img || '',
+          path: `/collection?collection=${c.name}`,
+        };
       });
+
       setCollections(merged);
-      if (hpRes.data?.about_image?.url) setAboutImage(hpRes.data.about_image.url);
+
+      if (hpRes.data?.about_image?.url) {
+        setAboutImage(hpRes.data.about_image.url);
+      }
 
       const limits: Record<string, SectionConfig> = {
-        new_arrivals: hpRes.data?.new_arrivals || { limit: 8, enabled: true },
-        trending: hpRes.data?.trending || { limit: 8, enabled: true },
-        featured: hpRes.data?.featured || { limit: 8, enabled: true },
-        bestseller: hpRes.data?.bestseller || { limit: 8, enabled: true },
+        new_arrivals: hpRes.data?.new_arrivals || {
+          limit: 8,
+          enabled: true,
+        },
+
+        trending: hpRes.data?.trending || {
+          limit: 8,
+          enabled: true,
+        },
+
+        featured: hpRes.data?.featured || {
+          limit: 8,
+          enabled: true,
+        },
+
+        bestseller: hpRes.data?.bestseller || {
+          limit: 8,
+          enabled: true,
+        },
       };
+
       setSectionLimits(limits);
       setPageReady(true);
 
-      if (limits.new_arrivals.enabled) api.get(`/api/products?filter=new_arrival&limit=${limits.new_arrivals.limit}`).then(r => setNewArrivals(Array.isArray(r.data) ? r.data : [])).catch(() => {});
-      if (limits.trending.enabled) api.get(`/api/products?filter=trending&limit=${limits.trending.limit}`).then(r => setTrending(Array.isArray(r.data) ? r.data : [])).catch(() => {});
-      if (limits.featured.enabled) api.get(`/api/products?filter=featured&limit=${limits.featured.limit}`).then(r => setFeatured(Array.isArray(r.data) ? r.data : [])).catch(() => {});
-      if (limits.bestseller.enabled) api.get(`/api/products?filter=bestseller&limit=${limits.bestseller.limit}`).then(r => setBestsellers(Array.isArray(r.data) ? r.data : [])).catch(() => {});
-      
-    }).catch(() => {
-      api.get('/api/products/collections').then(r => { if (Array.isArray(r.data)) setCollections(r.data.map((c: any) => ({ name: c.name, img: '', path: `/collection?collection=${c.name}` }))); }).catch(() => {});
-      api.get('/api/products?filter=new_arrival&limit=8').then(r => setNewArrivals(Array.isArray(r.data) ? r.data : [])).catch(() => {});
-      api.get('/api/products?filter=trending&limit=8').then(r => setTrending(Array.isArray(r.data) ? r.data : [])).catch(() => {});
-      api.get('/api/products?filter=featured&limit=8').then(r => setFeatured(Array.isArray(r.data) ? r.data : [])).catch(() => {});
-      api.get('/api/products?filter=bestseller&limit=8').then(r => setBestsellers(Array.isArray(r.data) ? r.data : [])).catch(() => {});
-        setPageReady(true);
+      // -------------------------
+      // New Arrivals - AUTOMATIC
+      // -------------------------
+      if (limits.new_arrivals.enabled) {
+        api
+          .get(
+            `/api/products/new-arrivals?limit=${limits.new_arrivals.limit}`
+          )
+          .then((r) => {
+            setNewArrivals(
+              Array.isArray(r.data) ? r.data : []
+            );
+          })
+          .catch((err) => {
+            console.error("Failed to load new arrivals:", err);
+            setNewArrivals([]);
+          });
+      }
+
+      // -------------------------
+      // Trending - AUTOMATIC
+      // -------------------------
+      if (limits.trending.enabled) {
+        api
+          .get(
+            `/api/products/trending?limit=${limits.trending.limit}`
+          )
+          .then((r) => {
+            setTrending(
+              Array.isArray(r.data) ? r.data : []
+            );
+          })
+          .catch((err) => {
+            console.error("Failed to load trending products:", err);
+            setTrending([]);
+          });
+      }
+
+      // -------------------------
+      // Featured
+      // -------------------------
+      if (limits.featured.enabled) {
+        api
+          .get(
+            `/api/products?filter=featured&limit=${limits.featured.limit}`
+          )
+          .then((r) => {
+            setFeatured(
+              Array.isArray(r.data) ? r.data : []
+            );
+          })
+          .catch((err) => {
+            console.error("Failed to load featured products:", err);
+            setFeatured([]);
+          });
+      }
+      // -------------------------
+      // Bestsellers - AUTOMATIC
+      // -------------------------
+      if (limits.bestseller.enabled) {
+        api
+          .get(
+            `/api/products/bestsellers?limit=${limits.bestseller.limit}`
+          )
+          .then((r) => {
+            setBestsellers(
+              Array.isArray(r.data) ? r.data : []
+            );
+          })
+          .catch((err) => {
+            console.error("Failed to load bestsellers:", err);
+            setBestsellers([]);
+          });
+      }
+
+      // -------------------------
+      // Fallback: Collections
+      // -------------------------
+      api
+        .get('/api/products/collections')
+        .then((r) => {
+          if (Array.isArray(r.data)) {
+            setCollections(
+              r.data.map((c: any) => ({
+                name: c.name,
+                img: '',
+                path: `/collection?collection=${c.name}`,
+              }))
+            );
+          }
+        })
+        .catch(() => {
+          setCollections([]);
+        });
+
+      // -------------------------
+      // Fallback: New Arrivals - AUTOMATIC
+      // -------------------------
+      api
+        .get('/api/products/new-arrivals?limit=8')
+        .then((r) => {
+          setNewArrivals(
+            Array.isArray(r.data) ? r.data : []
+          );
+        })
+        .catch(() => {
+          setNewArrivals([]);
+        });
+
+      // -------------------------
+      // Fallback: Trending - AUTOMATIC
+      // -------------------------
+      api
+        .get('/api/products/trending?limit=8')
+        .then((r) => {
+          setTrending(
+            Array.isArray(r.data) ? r.data : []
+          );
+        })
+        .catch(() => {
+          setTrending([]);
+        });
+
+      // -------------------------
+      // Fallback: Featured
+      // -------------------------
+      api
+        .get('/api/products?filter=featured&limit=8')
+        .then((r) => {
+          setFeatured(
+            Array.isArray(r.data) ? r.data : []
+          );
+        })
+        .catch(() => {
+          setFeatured([]);
+        });
+
+     // -------------------------
+    // Fallback: Bestsellers - AUTOMATIC
+    // -------------------------
+    api
+      .get('/api/products/bestsellers?limit=8')
+      .then((r) => {
+        setBestsellers(
+          Array.isArray(r.data) ? r.data : []
+        );
+      })
+      .catch(() => {
+        setBestsellers([]);
+      });
+
+      setPageReady(true);
     });
-  }, []);
+}, []);
 
   const ProductMarquee = ({ items, title, subtitle, link }: { items: any[]; title: string; subtitle: string; link: string }) => (
     <section className="py-16 sm:py-24 border-b-2 border-z-border overflow-hidden">
@@ -239,7 +408,8 @@ useEffect(() => {
 
       {/* Trending — Grid */}
       {sectionLimits.trending.enabled && trending.length > 0 && (
-        <ProductMarquee items={trending} title="Trending Now" subtitle="Popular Picks" link="/collection?status=Trending" />
+        <ProductMarquee items={trending} title="Trending Now" subtitle="Popular Picks" link="/collection?status=Trending"
+/>
       )}
 
       

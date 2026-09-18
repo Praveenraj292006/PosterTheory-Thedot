@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link , useNavigate} from "react-router-dom";
 import { Search, ShoppingBag, User, Menu, X, ChevronDown, LogOut, LayoutDashboard, UserCircle } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import Logo from "./Logo";
@@ -53,6 +53,7 @@ export default function Navbar({ cartCount = 0 }: NavbarProps) {
   const collectionsRef = useRef<HTMLDivElement>(null);
   const userRef = useRef<HTMLDivElement>(null);
 
+  const navigate = useNavigate();
   /* =========================================================
      COLLECTIONS — pulled from the backend
   ========================================================= */
@@ -82,19 +83,46 @@ export default function Navbar({ cartCount = 0 }: NavbarProps) {
      Swap these paths for your actual auth routes if different.
   ========================================================= */
   useEffect(() => {
-    api
-  .get("/api/auth/me")
-  .then((res) => setUser(res.data?.user || null))
-  .catch(() => setUser(null))
-  .finally(() => setAuthChecked(true));
-  }, []);
+  console.log("Navbar: checking authentication...");
 
-  const handleLogout = () => {
-    api.post("/api/auth/logout").catch(() => {});
-    setUser(null);
-    setUserMenuOpen(false);
-    setMobileOpen(false);
-  };
+  api
+    .get("/api/auth/me")
+    .then((res) => {
+      console.log("Navbar /auth/me response:", res.data);
+
+      const authUser = res.data?.user || res.data || null;
+      setUser(authUser);
+    })
+    .catch((err) => {
+      console.error(
+        "Navbar /auth/me error:",
+        err.response?.data || err.message
+      );
+
+      setUser(null);
+    })
+    .finally(() => {
+      console.log("Navbar: auth check completed");
+      setAuthChecked(true);
+    });
+}, []);
+
+const handleLogout = () => {
+  const confirmed = window.confirm(
+    "Are you sure you want to logout?"
+  );
+
+  if (!confirmed) return;
+
+  localStorage.removeItem("token");
+
+  setUser(null);
+  setUserMenuOpen(false);
+  setMobileOpen(false);
+
+  // Go back to the previous page
+  navigate(-1);
+};
 
   /* =========================================================
      SCROLL STATE
@@ -243,7 +271,7 @@ export default function Navbar({ cartCount = 0 }: NavbarProps) {
                             </Link>
                           )}
 
-                          <Link to="/profile" onClick={() => setUserMenuOpen(false)} className={dropdownRow}>
+                          <Link to="/dashboard" onClick={() => setUserMenuOpen(false)} className={dropdownRow}>
                             <span className="flex items-center gap-2 group-hover/item:translate-x-1 transition-transform"><UserCircle className="w-3.5 h-3.5" />Profile</span>
                           </Link>
 

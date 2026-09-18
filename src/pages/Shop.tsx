@@ -51,6 +51,11 @@ export default function Shop() {
   const searchRef = useRef<HTMLFormElement>(null);
   const [searchParams, setSearchParams] = useSearchParams();
 
+  //New Algs States
+  const [trendingProducts, setTrendingProducts] = useState<any[]>([]);
+  const [newArrivalProducts, setNewArrivalProducts] = useState<any[]>([]);
+  const [bestsellerProducts, setBestsellerProducts] = useState<any[]>([]);
+
   const collectionFilter = searchParams.get('collection');
   const layoutFilter = searchParams.get('layout');
   const statusFilter = searchParams.get('status');
@@ -134,17 +139,62 @@ export default function Shop() {
     }).catch(() => {});
   }, []);
 
-  useEffect(() => {
-    setLoading(true);
-    api.get('/api/products').then(res => {
-      setAllProducts(Array.isArray(res.data) ? res.data : []);
-    }).catch(() => setAllProducts([]))
-    .finally(() => setLoading(false));
-  }, []);
+ useEffect(() => {
+  setLoading(true);
+
+  Promise.all([
+    api.get('/api/products'),
+    api.get('/api/products/trending?limit=20'),
+    api.get('/api/products/new-arrivals?limit=20'),
+    api.get('/api/products/bestsellers?limit=20'),
+  ])
+    .then(([productsRes, trendingRes, newArrivalsRes, bestsellersRes]) => {
+      setAllProducts(
+        Array.isArray(productsRes.data)
+          ? productsRes.data
+          : []
+      );
+
+      setTrendingProducts(
+        Array.isArray(trendingRes.data)
+          ? trendingRes.data
+          : []
+      );
+
+      setNewArrivalProducts(
+        Array.isArray(newArrivalsRes.data)
+          ? newArrivalsRes.data
+          : []
+      );
+
+       setBestsellerProducts(
+          Array.isArray(bestsellersRes.data)
+            ? bestsellersRes.data
+            : []
+        );
+    })
+    .catch((err) => {
+      console.error("Failed to load products:", err);
+
+      setAllProducts([]);
+      setTrendingProducts([]);
+      setNewArrivalProducts([]);
+    })
+    .finally(() => {
+      setLoading(false);
+    });
+}, []);
 
   // Client-side filtering (server already ensures status='active')
-  const filtered = useMemo(() => {
-    let data = allProducts;
+ const filtered = useMemo(() => {
+  let data =
+    statusFilter === 'Trending'
+      ? trendingProducts
+      : statusFilter === 'New Arrival'
+        ? newArrivalProducts
+        : statusFilter === 'Bestseller'
+          ? bestsellerProducts
+          : allProducts;
     if (collectionFilter) data = data.filter(p => p.collection_name === collectionFilter || p.collection_slug === collectionFilter);
     if (layoutFilter) {
       const match = layouts.find(l => l.name === layoutFilter);
@@ -155,9 +205,18 @@ export default function Shop() {
       if (match) data = data.filter(p => p.available_sizes?.includes(match.id));
     }
     if (orientationFilter) data = data.filter(p => p.orientation === orientationFilter || p.orientation === 'both');
-    if (statusFilter) {
-      const flag = STATUS_FLAGS.find(f => f.label === statusFilter);
-      if (flag) data = data.filter(p => p[flag.key]);
+    if (
+      statusFilter &&
+      statusFilter !== 'Trending' &&
+      statusFilter !== 'New Arrival'
+    ) {
+      const flag = STATUS_FLAGS.find(
+        f => f.label === statusFilter
+      );
+
+      if (flag) {
+        data = data.filter(p => p[flag.key]);
+      }
     }
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
@@ -168,7 +227,7 @@ export default function Shop() {
       data = data.filter(p => (p.tags || []).some((tag: string) => tag.toLowerCase().includes(t)));
     }
     return data;
-  }, [allProducts, collectionFilter, layoutFilter, statusFilter, sizeFilter, orientationFilter, searchQuery, tagQuery, layouts, sizes]);
+  }, [allProducts, trendingProducts,  newArrivalProducts, bestsellerProducts,collectionFilter, layoutFilter, statusFilter, sizeFilter, orientationFilter, searchQuery, tagQuery, layouts, sizes]);
 
   const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
   const paginated = useMemo(() => filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE), [filtered, page]);
