@@ -18,35 +18,26 @@ export const fetchCsrfToken = async () => {
 
 // Request interceptor
 api.interceptors.request.use(async (config) => {
-  // -------------------------
-  // JWT AUTHENTICATION
-  // -------------------------
+  if (!csrfToken) {
+    await fetchCsrfToken();
+  }
+
   const token = localStorage.getItem("token");
 
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
 
-  // -------------------------
-  // CSRF PROTECTION
-  // -------------------------
-  const isSafeMethod = ["get", "head", "options"].includes(
-    config.method?.toLowerCase() || ""
-  );
-
-  if (!isSafeMethod) {
-    if (!csrfToken) {
-      await fetchCsrfToken();
-    }
-
-    if (csrfToken) {
-      config.headers["x-csrf-token"] = csrfToken;
-    }
+  if (
+    csrfToken &&
+    config.method &&
+    !["get", "head", "options"].includes(config.method)
+  ) {
+    config.headers["x-csrf-token"] = csrfToken;
   }
 
   return config;
 });
-
 // Response interceptor
 api.interceptors.response.use(
   (res) => res,
