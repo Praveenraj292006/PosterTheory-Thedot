@@ -1,6 +1,6 @@
 import React from 'react';
 import { Upload, Minimize, Maximize, AlignCenter, ZoomIn, ZoomOut, RotateCcw, RotateCw, Trash2 } from 'lucide-react';
-import type { PrintStyle, LayoutConfig } from '../../config/paperSizes';
+import type { PrintStyle, LayoutConfig ,MetallicThickness } from '../../config/paperSizes';
 import type { FramePriceEntry, MaterialPriceEntry } from '../../hooks/useCustomizeConfig';
 
 interface Props {
@@ -22,6 +22,8 @@ interface Props {
   onSetWithFrame: (v: boolean) => void;
   onSetFrameColor: (c: 'Black' | 'White') => void;
   onSetMaterial: (m: string) => void;
+  metallicThickness: MetallicThickness;
+  onSetMetallicThickness: (thickness: MetallicThickness) => void;
   onUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onFit: () => void;
   onFill: () => void;
@@ -34,13 +36,13 @@ interface Props {
   fileInputRef: React.RefObject<HTMLInputElement | null>;
 }
 
-export default function SettingsPanel({ activePage, paperSizes, layouts, portraitOnly, framePricing, materialPricing, withFrame, frameColor, selectedMaterial, frameOnly, onChangeSize, onToggleOrientation, onUpdatePrintStyle, onChangeLayout, onChangeSplitDirection, onSetWithFrame, onSetFrameColor, onSetMaterial, onUpload, onFit, onFill, onCenter, onZoomIn, onZoomOut, onRotateCW, onRotateCCW, onRemovePage, fileInputRef }: Props) {
+export default function SettingsPanel({ activePage, paperSizes, layouts, portraitOnly, metallicThickness, onSetMetallicThickness, framePricing, materialPricing, withFrame, frameColor, selectedMaterial, frameOnly, onChangeSize, onToggleOrientation, onUpdatePrintStyle, onChangeLayout, onChangeSplitDirection, onSetWithFrame, onSetFrameColor, onSetMaterial, onUpload, onFit, onFill, onCenter, onZoomIn, onZoomOut, onRotateCW, onRotateCCW, onRemovePage, fileInputRef }: Props) {
   const isPortraitOnly = portraitOnly.includes(activePage.size);
   const isBookmark = activePage.size === 'Bookmark';
   const frameEntry = framePricing.find(f => f.size_name === activePage.size);
 
   return (
-    <div className="bg-z-paper border-2 border-z-border p-3 sm:p-5 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] overflow-hidden">
+    <div className="relative z-20 bg-z-paper border-2 border-z-border p-3 sm:p-5 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] overflow-visible">
       <h4 className="text-[12px] font-mono font-black uppercase tracking-widest text-z-ink dark:text-z-ink mb-4 pb-2 border-b border-z-border">Settings</h4>
 
       {/* Frame */}
@@ -81,23 +83,59 @@ export default function SettingsPanel({ activePage, paperSizes, layouts, portrai
         <div className="mb-5">
           <label className="text-[11px] font-mono font-black uppercase tracking-wider text-z-ink/70 dark:text-z-ink/80 block mb-2">Material</label>
           <div className="grid grid-cols-1 gap-2">
-            {materialPricing.map(m => (
-              <button key={m.material} onClick={() => onSetMaterial(m.material)}
-                className={`py-2 text-[10px] font-mono font-black uppercase border-2 transition-all active:scale-95 ${selectedMaterial === m.material ? 'bg-z-ink text-z-paper border-z-ink' : 'bg-z-paper text-z-ink border-z-border hover:border-z-ink'}`}>
-                {m.material}{m.extra_price > 0 && <span className="ml-1 opacity-70">+&#8377;{m.extra_price}</span>}
-              </button>
-            ))}
+            {Array.from(
+                new Map(
+                  materialPricing.map((m) => [m.material, m])
+                ).values()
+              ).map((m) => (
+                <button
+                  key={m.material}
+                  onClick={() => onSetMaterial(m.material)}
+                  className={`py-2 text-[10px] font-mono font-black uppercase border-2 transition-all active:scale-95 ${
+                    selectedMaterial === m.material
+                      ? 'bg-z-ink text-z-paper border-z-ink'
+                      : 'bg-z-paper text-z-ink border-z-border hover:border-z-ink'
+                  }`}
+                >
+                  {m.material}
+                </button>
+              ))}
           </div>
           <p className="text-[9px] font-mono text-z-muted mt-2 leading-relaxed">
             {selectedMaterial === 'METALLIC SHEET'
               ? 'Metal poster — Premium metal posters with a sleek finish and long-lasting durability'
-              : 'Art poster — High-quality paper prints with vibrant colors and sharp details'}
+              : 'Paper poster — High-quality paper prints with vibrant colors and sharp details'}
           </p>
         </div>
       )}
 
+      {/* Metallic Thickness */}
+      {!isBookmark && selectedMaterial === 'METALLIC POSTER' && (
+        <div className="mb-5">
+          <label className="text-[11px] font-mono font-black uppercase tracking-wider text-z-ink/70 dark:text-z-ink/80 block mb-2">
+            Metallic Thickness
+          </label>
+
+          <div className="grid grid-cols-2 gap-2">
+            {(['0.45mm', '1mm'] as const).map((thickness) => (
+              <button
+                key={thickness}
+                onClick={() => onSetMetallicThickness(thickness)}
+                className={`py-2.5 text-[10px] sm:text-[12px] font-mono font-black uppercase border-2 transition-all active:scale-95 ${
+                  metallicThickness === thickness
+                    ? 'bg-z-ink text-z-paper border-z-ink'
+                    : 'bg-z-paper text-z-ink border-z-border hover:border-z-ink'
+                }`}
+              >
+                {thickness === '0.45mm' ? '0.45 mm' : '1 mm'}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Paper Size — hidden for frame-only sizes */}
-      {!frameOnly && !isBookmark && <div className="mb-5">
+      { !isBookmark && <div className="mb-5">
         <label className="text-[11px] font-mono font-black uppercase tracking-wider text-z-ink/70 dark:text-z-ink/80 block mb-2">Paper Size</label>
         <select value={activePage.size} onChange={(e) => onChangeSize(e.target.value)}
           className="w-full h-10 px-3 text-[12px] font-mono font-black uppercase border-2 border-z-border bg-z-paper text-z-ink cursor-pointer">

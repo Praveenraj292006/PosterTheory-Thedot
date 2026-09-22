@@ -2,6 +2,7 @@
 
 export type Orientation = 'portrait' | 'landscape';
 export type PrintStyle = 'full-bleed' | 'white-margin';
+export type MetallicThickness = '0.45mm' | '1mm';
 
 export interface SizeConfig {
   id?: number;
@@ -43,6 +44,9 @@ export interface PageItem {
   layout: string;
   panelCount: number;
   splitDirection: SplitDirection;
+
+  metallicThickness?: MetallicThickness;
+
   hasImage: boolean;
   fileName: string;
   imageDataUrl: string | null;
@@ -60,6 +64,7 @@ export const DEFAULT_SIZES: SizeConfig[] = [
   { name: 'A6', width_mm: 105, height_mm: 148, margin_top: 8, margin_bottom: 8, margin_left: 8, margin_right: 8 },
   { name: 'Polaroid', width_mm: 75, height_mm: 90, margin_top: 5, margin_bottom: 20, margin_left: 5, margin_right: 5 },
   { name: 'Pocket', width_mm: 50, height_mm: 70, margin_top: 3, margin_bottom: 14, margin_left: 3, margin_right: 3 },
+  { name: 'Bookmark', width_mm: 50.8, height_mm: 152.4, margin_top: 5, margin_bottom: 5, margin_left: 5, margin_right: 5 },
 ];
 
 // ─── Derived helpers that work from SizeConfig[] ───
@@ -170,3 +175,8 @@ export function getPrintQuality(imageWidth: number, imageHeight: number, paperWm
   if (dpi >= 150) return 'fair';
   return 'poor';
 }
+
+export const METALLIC_THICKNESSES: MetallicThickness[] = [
+  '0.45mm',
+  '1mm',
+];

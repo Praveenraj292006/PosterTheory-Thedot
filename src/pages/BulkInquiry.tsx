@@ -178,7 +178,7 @@ export default function BulkInquiry() {
         >
           <div>
           
-            <h1 className="bulk-reveal bulk-title font-display font-bold text-5xl md:text-7xl tracking-tighter uppercase leading-[0.9] italic">
+            <h1 className="bulk-reveal bulk-title font-display font-bold text-5xl md:text-7xl tracking-tighter uppercase leading-[0.9]  ">
                Bulk Posters
               <br />
               Made For Every
@@ -243,7 +243,7 @@ export default function BulkInquiry() {
 
         <section className="bulk-section mb-24">
           <div className="flex items-end justify-between gap-6 flex-wrap mb-10 border-b-2 border-z-border pb-6">
-            <h2 className="font-display  uppercase italic text-3xl md:text-4xl tracking-tight">
+            <h2 className="font-display  uppercase   text-3xl md:text-4xl tracking-tight">
               Built for how you order
             </h2>
           
@@ -265,7 +265,7 @@ export default function BulkInquiry() {
 
         {/* <section className="bulk-section mb-24">
           <div className="mb-10 border-b-2 border-z-border pb-6">
-            <h2 className="font-display  uppercase italic text-3xl md:text-4xl tracking-tight">
+            <h2 className="font-display  uppercase   text-3xl md:text-4xl tracking-tight">
               Recent bulk runs
             </h2>
           </div>
@@ -283,7 +283,7 @@ export default function BulkInquiry() {
         </section> */}
 
         <section className="bulk-section relative border-2 border-z-border bg-z-ink text-z-paper text-center py-20 px-6">
-          <h2 className="font-display  uppercase italic text-3xl md:text-5xl tracking-tight max-w-[22ch] mx-auto mb-10 leading-[0.95]">
+          <h2 className="font-display  uppercase   text-3xl md:text-5xl tracking-tight max-w-[22ch] mx-auto mb-10 leading-[0.95]">
             Tell us the run size, the poster size, and the deadline.
           </h2>
           <Link

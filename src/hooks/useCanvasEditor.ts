@@ -2,13 +2,36 @@ import { useState, useRef, useEffect } from 'react';
 import { Canvas as FabricCanvas, FabricImage, Rect as FabricRect } from 'fabric';
 import JSZip from 'jszip';
 import {
-  PAPER_SIZES, SIZE_PRICES, CUSTOM_MARGINS, WHITE_MARGIN_MM,
-  PORTRAIT_ONLY_SIZES, getCanvasDims, getPrintQuality,
-  type Orientation, type PrintStyle, type PageItem
+  PAPER_SIZES,
+  CUSTOM_MARGINS,
+  PORTRAIT_ONLY_SIZES,
+  getCanvasDims,
+  getPrintQuality,
+  type Orientation,
+  type PrintStyle,
+  type PageItem,
 } from '../config/paperSizes';
 
+export function useCanvasEditor(
+  dynamicPaperSizes?: Record<string, [number, number]>,
+  dynamicCustomMargins?: Record<
+    string,
+    {
+      top: number;
+      right: number;
+      bottom: number;
+      left: number;
+      imageW: number;
+      imageH: number;
+    }
+  >,
+  dynamicPortraitOnlySizes?: string[]
+) {
 
-export function useCanvasEditor() {
+  const activePaperSizes = dynamicPaperSizes || PAPER_SIZES;
+  const activeCustomMargins = dynamicCustomMargins || CUSTOM_MARGINS;
+  const activePortraitOnlySizes =
+  dynamicPortraitOnlySizes || PORTRAIT_ONLY_SIZES;
   const [pages, setPages] = useState<PageItem[]>(() => {
     try {
       const saved = localStorage.getItem('customize_pages');
@@ -38,14 +61,28 @@ export function useCanvasEditor() {
   }, [pages, activePageIdx]);
 
   const activePage = pages[activePageIdx] || null;
-  const dims = activePage ? getCanvasDims(activePage.size, activePage.orientation, activePage.printStyle, activePage.panelCount, activePage.splitDirection) : { width: 400, height: 460, pxPerMm: 1 };
+  const dims = activePage
+  ? getCanvasDims(
+      activePage.size,
+      activePage.orientation,
+      activePage.printStyle,
+      activePage.panelCount,
+      activePage.splitDirection,
+      700,
+      activeCustomMargins,
+      activePaperSizes
+    )
+  : { width: 400, height: 460, pxPerMm: 1 };
 
-  const paperMm = activePage ? (() => {
-    const ps = PAPER_SIZES[activePage.size] || [210, 297];
-    return activePage.orientation === 'portrait'
-      ? { w: ps[0], h: ps[1] }
-      : { w: ps[1], h: ps[0] };
-  })() : { w: 0, h: 0 };
+ const paperMm = activePage
+  ? (() => {
+      const ps = activePaperSizes[activePage.size] || [210, 297];
+
+      return activePage.orientation === 'portrait'
+        ? { w: ps[0], h: ps[1] }
+        : { w: ps[1], h: ps[0] };
+    })()
+  : { w: 0, h: 0 };
 
   const filledPages = pages.filter(p => p.hasImage);
 
@@ -253,21 +290,60 @@ export function useCanvasEditor() {
   };
 
   const toggleOrientation = () => {
-    if (!activePage || activePage.size === 'Polaroid' || activePage.size === 'Pocket') return;
-    const newOr: Orientation = activePage.orientation === 'portrait' ? 'landscape' : 'portrait';
-    let quality = activePage.quality;
-    if (activePage.imageWidth && activePage.imageHeight) {
-      const [w, h] = PAPER_SIZES[activePage.size];
-      const [pw, ph] = newOr === 'portrait' ? [w, h] : [h, w];
-      quality = getPrintQuality(activePage.imageWidth, activePage.imageHeight, pw, ph);
-    }
-    setPages(prev => prev.map((p, i) => i === activePageIdx ? { ...p, orientation: newOr, quality } : p));
-  };
+  if (
+    !activePage ||
+    activePage.size === 'Polaroid' ||
+    activePage.size === 'Pocket'
+  ) {
+    return;
+  }
+
+  const newOr: Orientation =
+    activePage.orientation === 'portrait'
+      ? 'landscape'
+      : 'portrait';
+
+  let quality = activePage.quality;
+
+  if (activePage.imageWidth && activePage.imageHeight) {
+    const [w, h] =
+      activePaperSizes[activePage.size] || [210, 297];
+
+    const [pw, ph] =
+      newOr === 'portrait'
+        ? [w, h]
+        : [h, w];
+
+    quality = getPrintQuality(
+      activePage.imageWidth,
+      activePage.imageHeight,
+      pw,
+      ph
+    );
+  }
+
+  setPages(prev =>
+    prev.map((p, i) =>
+      i === activePageIdx
+        ? {
+            ...p,
+            orientation: newOr,
+            quality,
+          }
+        : p
+    )
+  );
+};
 
   const changeSize = (size: string, dynamicPaperSizes?: Record<string, [number, number]>) => {
     if (!activePage) return;
-    const orientation = PORTRAIT_ONLY_SIZES.includes(size) ? 'portrait' : activePage.orientation;
-    const isSingleOnly = PORTRAIT_ONLY_SIZES.includes(size);
+    const isPortraitOnly = activePortraitOnlySizes.includes(size);
+
+    const orientation = isPortraitOnly
+      ? 'portrait'
+      : activePage.orientation;
+
+    const isSingleOnly = isPortraitOnly;
     let quality = activePage.quality;
     if (activePage.imageWidth && activePage.imageHeight) {
       const ps = dynamicPaperSizes || PAPER_SIZES;

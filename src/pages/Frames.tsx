@@ -3,41 +3,61 @@ import { useNavigate } from 'react-router-dom';
 import { Pencil, LayoutGrid } from 'lucide-react';
 import api from '../lib/api';
 import ProductCard from '../components/ProductCard';
+import Placeholder from '../assets/placeholder-frames2.webp'
 
 const FRAME_SIZES = [
-  { label: '4" × 4"',     sub: 'Square',    price: 90,  w: 4,  h: 4  },
-  { label: '6" × 4"',     sub: 'A6',        price: 100, w: 6,  h: 4  },
-  { label: '7" × 5"',     sub: 'Standard',  price: 120, w: 7,  h: 5  },
-  { label: '8" × 12"',    sub: 'A4',        price: 145, w: 8,  h: 12 },
-  { label: '12" × 16"',   sub: 'A3',        price: 200, w: 12, h: 16 },
+  {label: '2" × 6"',sub: 'Bookmark',price: 100,w: 2,h: 6,},
+  { label: '4" × 4"',   sub: 'Square',   price: 90,  w: 4,  h: 4 },
+  { label: '6" × 4"',   sub: 'A6',        price: 100, w: 6,  h: 4 },
+  { label: '7" × 5"',   sub: 'Standard',  price: 120, w: 7,  h: 5 },
+  { label: '8" × 12"',  sub: 'A4',        price: 145, w: 8,  h: 12 },
+  { label: '12" × 16"', sub: 'A3',        price: 200, w: 12, h: 16 },
 ];
 
+
+const FRAME_SHOP_SIZES: Record<string, string> = {
+  '4" × 4"': "4x4",
+  '6" × 4"': "A6",
+  '7" × 5"': "7x5",
+  '8" × 12"': "A4",
+  '12" × 16"': "A3",
+  '2" × 6"': 'Bookmark',
+};
 // Sample images from existing uploads for frame mockups
-const SAMPLE_IMAGES = [
-  '/uploads/minimal/simplify.jpg',
-  '/uploads/photography/Lion.jpg',
-  '/uploads/anime/07d7f323de49b16123cf7c16a2aeccac.jpg.jpeg',
-  '/uploads/music/%23billieeilish.jpg',
-  '/uploads/abstract/-2.jpg',
-];
+const SAMPLE_IMAGES = '../assets/Placeholder-Frames.avif';
 
-// Scale all sizes relative to the largest (12×16) for visual comparison
-const MAX_H = 16;
-const PREVIEW_MAX_H_PX = 140; // px height for the largest frame
 
-function FrameCard({ size, index, frameColor }: { size: typeof FRAME_SIZES[0]; index: number; frameColor: 'black' | 'white' }) {
+
+
+function FrameCard({
+  size,
+  index,
+  frameColor,
+  onClick,
+}: {
+  size: typeof FRAME_SIZES[number];
+  index: number;
+  frameColor: "black" | "white";
+  onClick: () => void;
+}) {
+  const MAX_H = 16;
+  const PREVIEW_MAX_H_PX = 300;
+
   const scale = PREVIEW_MAX_H_PX / MAX_H;
+
   const frameW = Math.round(size.w * scale);
   const frameH = Math.round(size.h * scale);
-  const BORDER = 10;
+
+  const BORDER = 16;
+
   const imgW = frameW - BORDER * 2;
   const imgH = frameH - BORDER * 2;
   const isBlack = frameColor === 'black';
 
   return (
-    <div className="flex flex-col items-center gap-4">
+    <div  onClick={onClick} className="flex flex-col items-center gap-4">
       {/* Frame mockup */}
-      <div className="flex items-end justify-center" style={{ height: PREVIEW_MAX_H_PX + 20 }}>
+      <div className="flex items-end justify-center w-full" style={{ height: PREVIEW_MAX_H_PX + 20 }}>
         <div
           className="relative flex items-center justify-center transition-colors duration-300"
           style={{
@@ -56,7 +76,7 @@ function FrameCard({ size, index, frameColor }: { size: typeof FRAME_SIZES[0]; i
             style={{ border: `1px solid ${isBlack ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.12)'}` }}
           />
           <img
-            src={SAMPLE_IMAGES[index % SAMPLE_IMAGES.length]}
+            src={Placeholder}
             alt={size.label}
             className="w-full h-full object-cover"
             style={{ width: imgW, height: imgH }}
@@ -90,6 +110,17 @@ export default function Frames() {
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
 
+ const handleFrameSizeClick = (sizeLabel: string) => {
+  const shopSize = FRAME_SHOP_SIZES[sizeLabel];
+
+  if (!shopSize) return;
+
+  navigate({
+    pathname: "/collection",
+    search: `?size=${encodeURIComponent(shopSize)}&frame=${frameColor}`,
+  });
+};
+
   useEffect(() => {
     if (view === 'collection' && products.length === 0) {
       setLoading(true);
@@ -118,7 +149,7 @@ export default function Frames() {
           <p className="text-[11px] sm:text-[13px] font-mono uppercase tracking-[0.3em] sm:tracking-[0.5em] text-z-ink  mb-2 sm:mb-4">
             Premium_Frames_
           </p>
-          <h1 className="font-display font-black text-5xl sm:text-8xl lg:text-9xl uppercase tracking-tighter leading-none italic">
+          <h1 className="font-display font-black text-5xl sm:text-8xl lg:text-9xl uppercase tracking-tighter leading-none  ">
             <span >Frames</span>
           </h1>
           <p className="text-[13px] sm:text-[18px] font-mono text-z-muted uppercase mt-3 tracking-widest">
@@ -172,17 +203,23 @@ export default function Frames() {
         </div>
 
         {/* ── Size + Sample Images ── */}
-        <section className="mb-16 sm:mb-24">
+        <section  className="mb-16 sm:mb-24">
           
 
           {/* Visual size comparison row */}
-          <div className="overflow-x-auto pb-4">
-            <div className="flex items-end gap-8 sm:gap-12 lg:gap-16 min-w-max px-2 pb-2">
-              {FRAME_SIZES.map((size, i) => (
-                <FrameCard key={size.label} size={size} index={i} frameColor={frameColor} />
-              ))}
+            <div className="overflow-x-auto pb-6 w-full">
+              <div className="flex items-end justify-center gap-8 sm:gap-12 lg:gap-16 min-w-max px-4">
+                {FRAME_SIZES.map((size, i) => (
+                  <FrameCard
+                    key={size.label}
+                    size={size}
+                    index={i}
+                    frameColor={frameColor}
+                    onClick={() => handleFrameSizeClick(size.label)}
+                  />
+                ))}
+              </div>
             </div>
-          </div>
 
           {/* Divider */}
           <div className="border-t-2 border-z-border mt-12 sm:mt-16" />
@@ -222,7 +259,7 @@ export default function Frames() {
         {view === 'collection' && (
           <section className="mb-16 sm:mb-24">
             <div className="flex items-center justify-between mb-6 border-b-2 border-z-border pb-4">
-              <h2 className="font-display font-black text-2xl sm:text-4xl uppercase tracking-tighter italic">
+              <h2 className="font-display font-black text-2xl sm:text-4xl uppercase tracking-tighter  ">
                 Framed Collection
               </h2>
               {!loading && (
@@ -248,7 +285,7 @@ export default function Frames() {
               </div>
             ) : (
               <div className="py-24 text-center border-4 border-dashed border-z-border">
-                <p className="font-display font-black text-3xl text-z-muted uppercase italic">No framed products yet.</p>
+                <p className="font-display font-black text-3xl text-z-muted uppercase  ">No framed products yet.</p>
                 <p className="font-mono text-[12px] font-bold text-z-muted mt-3 uppercase tracking-[0.3em]">
                   Assign the Bookmark size to products in the admin panel.
                 </p>

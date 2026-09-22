@@ -1,9 +1,10 @@
-﻿import React, { useState } from "react";
+﻿
+import React, { useState } from "react";
 import { motion } from "motion/react";
-import { ArrowRight, Heart, ShoppingBag, Eye } from "lucide-react";
+import { Heart, ShoppingBag, Eye } from "lucide-react";
 import { Link } from "react-router-dom";
 import ProductModal from "./ProductModal";
-import mockUp from '../assets/Mocup-A4.png'
+import { useWishlist } from "../context/WishlistContext";
 
 interface ProductProps {
   id: number;
@@ -16,6 +17,10 @@ interface ProductProps {
   layout?: string;
   available_sizes?: number[];
   available_layouts?: number[];
+
+  // Frame support
+  frameColor?: "black" | "white";
+
   [key: string]: any;
 }
 
@@ -28,13 +33,27 @@ export default function ProductCard(props: ProductProps) {
     collection_name,
     layout,
     available_sizes,
+    frameColor,
   } = props;
 
   const [showModal, setShowModal] = useState(false);
-  const [liked, setLiked] = useState(false);
+  const { isFavourite, toggleFavourite } = useWishlist();
 
+  const liked = isFavourite(id);
   const displayPrice = price ?? 0;
-  
+
+  const hasFrame = frameColor === "black" || frameColor === "white";
+
+  const frameStyles =
+    frameColor === "white"
+      ? {
+          backgroundColor: "#f0ede8",
+          borderColor: "#d8d3ca",
+        }
+      : {
+          backgroundColor: "#1a1a1a",
+          borderColor: "#111111",
+        };
 
   return (
     <>
@@ -43,29 +62,56 @@ export default function ProductCard(props: ProductProps) {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-60px" }}
         transition={{ duration: 0.45 }}
-        className="group relative grid lg:grid-col-4   p-3 sm:p-4 bg-z-paper transition-colors duration-300 hover:bg-z-paper"
+        className="group relative grid lg:grid-col-4 p-3 sm:p-4 bg-z-paper transition-colors duration-300 hover:bg-z-paper"
       >
         {/* PRODUCT IMAGE AREA */}
         <div className="relative">
+
           {/* Wishlist */}
           <button
             type="button"
-            onClick={(e) => {
+            onClick={async (e) => {
               e.stopPropagation();
-              setLiked(!liked);
+              await toggleFavourite(id);
             }}
-            aria-label={liked ? "Remove from wishlist" : "Add to wishlist"}
+            aria-label={
+              liked
+                ? "Remove from wishlist"
+                : "Add to wishlist"
+            }
             className="absolute top-3 right-3 z-30 w-9 h-9 flex items-center justify-center bg-z-paper/90 border border-z-border text-z-ink backdrop-blur-sm opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300"
           >
-            <Heart className={`w-4 h-4 ${liked ? "fill-current" : ""}`} />
+            <Heart
+              className={`w-4 h-4 transition-all duration-200 ${
+                liked ? "fill-current scale-110" : ""
+              }`}
+            />
           </button>
 
-          {/* Poster */}
-          <div className="relative aspect-[4/5] overflow-hidden border  bg-black p-4  transition-all duration-500 ease-out group-hover:shadow-[8px_8px_0px_0px_var(--color-z-shadow)] group-hover:-translate-x-1 group-hover:-translate-y-1">
-            <div  onClick={(e) => {
-                  e.stopPropagation();
-                  setShowModal(true);
-                }}className="relative w-full h-full overflow-hidden bg-white">
+          {/* POSTER + FRAME */}
+          <div
+            className={`
+              relative aspect-[4/5] overflow-hidden border
+              transition-all duration-500 ease-out
+              group-hover:shadow-[8px_8px_0px_0px_var(--color-z-shadow)]
+              group-hover:-translate-x-1
+              group-hover:-translate-y-1
+              ${
+                hasFrame
+                  ? "p-4 sm:p-5 md:p-6"
+                  : "p-4 bg-black"
+              }
+            `}
+            style={hasFrame ? frameStyles : undefined}
+          >
+            {/* Inner mat / poster area */}
+            <div
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowModal(true);
+              }}
+              className="relative w-full h-full overflow-hidden bg-white cursor-pointer"
+            >
               {image ? (
                 <img
                   src={image}
@@ -109,6 +155,7 @@ export default function ProductCard(props: ProductProps) {
 
         {/* PRODUCT INFORMATION */}
         <div className="pt-4 px-0.5 flex flex-col items-center justify-center">
+
           {/* Collection */}
           <p className="text-[8px] sm:text-[9px] font-mono font-bold uppercase tracking-[0.22em] text-z-muted mb-1.5">
             {collection_name || "Poster Theory"}
@@ -116,7 +163,7 @@ export default function ProductCard(props: ProductProps) {
 
           {/* Product Title */}
           <Link to={`/product/${id}`} className="block">
-            <h3 className="font-display font-bold text-sm sm:text-[15px] uppercase tracking-tight leading-tigh  text-z-ink line-clamp-2 hover:text-z-muted transition-colors">
+            <h3 className="font-display font-bold text-sm sm:text-[15px] uppercase tracking-tight leading-tight text-z-ink line-clamp-2 hover:text-z-muted transition-colors">
               {title}
             </h3>
           </Link>
@@ -164,3 +211,4 @@ export default function ProductCard(props: ProductProps) {
     </>
   );
 }
+

@@ -235,6 +235,10 @@ export const downloadOrder = async (req: any, res: Response) => {
         lines.push(`   Print: ${specs.printStyle || 'full-bleed'}`);
         lines.push(`   Frame: ${specs.frame || 'None'}`);
         lines.push(`   Material: ${specs.material || 'PAPER'}`);
+
+        if (specs.material === 'METALLIC POSTER' && specs.metallicThickness) {
+          lines.push(`   Thickness: ${specs.metallicThickness}`);
+        }
       }
       lines.push(``);
     });

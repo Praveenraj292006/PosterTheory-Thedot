@@ -22,6 +22,7 @@ import exportRoutes from "./server/routes/export.ts";
 import adminRoutes from "./server/routes/admin.ts";
 import { trackVisit } from "./server/controllers/analyticsController.ts";
 import { initStorage } from "./server/config/initStorage.ts";
+import favourites from "./server/routes/favourites.ts";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -68,6 +69,7 @@ async function startServer() {
   app.use("/api/upload", uploadRoutes);
   app.use("/api/export", exportRoutes);
   app.use("/api/admin", adminRoutes);
+  app.use("/api/profile/favourites", favourites);
 
   // Public analytics tracking (exempt from CSRF — non-sensitive, fire-and-forget)
   app.post("/api/track-visit", trackVisit);

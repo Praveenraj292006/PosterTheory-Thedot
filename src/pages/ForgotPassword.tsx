@@ -75,7 +75,7 @@ export default function ForgotPassword() {
           <p className="text-[10px] font-mono font-bold text-z-ink uppercase mb-4 tracking-[0.4em] underline leading-none decoration-2">
             {step === 'email' ? 'ACCOUNT_RECOVERY' : step === 'otp' ? 'VERIFY_IDENTITY' : 'NEW_PASSWORD'}
           </p>
-          <h1 className="font-display font-black text-5xl uppercase tracking-tighter italic leading-none text-z-ink">
+          <h1 className="font-display font-black text-5xl uppercase tracking-tighter   leading-none text-z-ink">
             {step === 'email' ? <>FORGOT_<span className="text-outline">PWD</span></> : step === 'otp' ? <>ENTER_<span className="text-outline">OTP</span></> : <>RESET_<span className="text-outline">PWD</span></>}
           </h1>
         </div>

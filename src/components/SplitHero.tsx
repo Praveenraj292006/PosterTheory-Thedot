@@ -65,7 +65,7 @@ export default function SplitPostersHero({
   images,
   fallbackImage,
   eyebrow = 'COLLECTION',
-  title = 'SPLIT_POSTERS',
+  title = 'SPLIT  POSTERS',
   subtitle = 'Two or three panels, one composition — printed and trimmed to hang as a single set.',
 }: SplitPostersHeroProps) {
   const resolved: SplitPosterImages | null =
@@ -80,7 +80,7 @@ export default function SplitPostersHero({
           <span className="font-mono font-black uppercase tracking-[0.5em] text-xs text-z-muted block mb-6 underline decoration-4 underline-offset-8">
             {eyebrow}
           </span>
-          <h1 className="font-display font-bold uppercase italic tracking-tighter text-5xl text-z-paper sm:text-7xl md:text-8xl leading-[0.9] mb-30">
+          <h1 className="font-display font-bold uppercase  tracking-tighter text-5xl text-z-paper sm:text-7xl md:text-8xl leading-[0.9] mb-30">
             {title}
           </h1>
         </div>

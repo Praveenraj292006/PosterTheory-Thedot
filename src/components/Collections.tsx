@@ -53,7 +53,7 @@ const CollectionCard: React.FC<{ cat: Collection }> = ({ cat }) => {
   };
 
   return (
-    <motion.div layout initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }} transition={{ duration: 0.35, ease: "easeOut" }} style={{ perspective: 1000 }} className="collection-card group/card shrink-0 w-[calc((100vw-3rem)/3)] sm:w-auto snap-start">
+    <motion.div layout  style={{ perspective: 1000 }} className="collection-card group/card shrink-0 w-[calc((100vw-3rem)/3)] sm:w-auto snap-start">
       <Link to={cat.path} className="block">
         <motion.div onMouseMove={handleMouseMove} onMouseLeave={resetTilt} whileHover={{ y: -12, scale: 1.02 }} style={{ rotateX: springRotateX, rotateY: springRotateY, transformStyle: "preserve-3d" }} transition={{ type: "spring", stiffness: 300, damping: 20 }} className="relative aspect-[3/4] overflow-hidden border-2 border-z-border bg-z-paper group-hover/card:shadow-[12px_16px_0px_0px_var(--color-z-shadow)] transition-shadow duration-300">
           {/* image or fallback initial */}
@@ -108,9 +108,11 @@ const Collections: React.FC<CollectionCarouselProps> = ({ collections }) => {
       {/* ================================================= HEADER ================================================= */}
       <div className="max-w-[1440px] mx-auto px-6">
         <div className="flex items-end justify-between">
-          <TextReveal as="h2" className="font-display py-3 font-500 text-3xl sm:text-6xl uppercase tracking-tighter text-z-ink mb-10">
-            Collections
-          </TextReveal>
+
+          <div className="pb-10">
+          <TextReveal as="h2" className="font-display  font-500 text-3xl sm:text-6xl uppercase tracking-tighter text-z-ink">
+          Collections
+          </TextReveal></div>
 
           {/* navigation arrows */}
           {collections.length > visibleCount && (
@@ -129,12 +131,12 @@ const Collections: React.FC<CollectionCarouselProps> = ({ collections }) => {
       {/* ================================================= CARDS ================================================= */}
       <div className="max-w-[1440px] mx-auto px-6">
         <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory scrollbar-hide pb-4 lg:grid lg:grid-cols-5 lg:gap-5 lg:overflow-visible lg:pb-0">
-          <AnimatePresence mode="popLayout">
+          
             {/* keyed by a stable identity (path/name) so AnimatePresence only animates the card entering/leaving, not the whole row */}
             {visibleCollections.map((cat) => (
               <CollectionCard key={cat.path || cat.name} cat={cat} />
             ))}
-          </AnimatePresence>
+          
         </div>
       </div>
 

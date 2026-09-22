@@ -96,7 +96,7 @@ export default function MetallicPostersHero({
           <span className="font-mono font-black uppercase tracking-[0.5em] text-xs text-z-muted block mb-6 underline decoration-4 underline-offset-8">
             {eyebrow}
           </span>
-          <h1 className="font-display font-bold uppercase italic tracking-tighter text-5xl sm:text-7xl md:text-8xl leading-[0.9] ">
+          <h1 className="font-display font-bold uppercase   tracking-tighter text-5xl sm:text-7xl md:text-8xl leading-[0.9] ">
             {title}
           </h1>
         </div>

@@ -16,6 +16,8 @@ const POLICIES = [
   "Cancellation Policy",
 ];
 
+
+
 const FAQ_SECTIONS = [
   { section: 'GENERAL', id: 'general', items: [
     { q: 'What is Poster Theory?', a: 'Poster Theory is an online platform offering high-quality posters, framed artwork, and customized posters designed to suit your personal style and space.' },
@@ -206,18 +208,54 @@ tl.to(".help-line", {
   return () => ctx.revert();
 }, []);
 
-  useEffect(() => {
-    if (!hash) return;
-    const id = hash.slice(1);
-    setActiveSection(null);
-    setTimeout(() => {
-      const el = document.getElementById(id);
-      if (el) {
-        const offset = el.getBoundingClientRect().top + window.scrollY - 100;
-        window.scrollTo({ top: offset, behavior: 'smooth' });
-      }
-    }, 50);
-  }, [hash]);
+ useEffect(() => {
+  if (!hash) return;
+
+  const id = hash.slice(1);
+
+  const policyMap: Record<string, string> = {
+    terms: "Terms & Conditions",
+    privacy: "Privacy Policy",
+    "shipping-policy": "Shipping Policy",
+    "return-policy": "Return & Refund Policy",
+    cancellation: "Cancellation Policy",
+  };
+
+  // If hash belongs to a policy, open the modal
+  const policy = policyMap[id];
+
+  if (policy) {
+    setSelectedPolicy(policy);
+
+    // Remove hash from URL without reloading
+    window.history.replaceState(
+      null,
+      "",
+      window.location.pathname
+    );
+
+    return;
+  }
+
+  // Otherwise handle normal Help page sections
+  setActiveSection(null);
+
+  setTimeout(() => {
+    const el = document.getElementById(id);
+
+    if (el) {
+      const offset =
+        el.getBoundingClientRect().top +
+        window.scrollY -
+        100;
+
+      window.scrollTo({
+        top: offset,
+        behavior: "smooth",
+      });
+    }
+  }, 50);
+}, [hash]);
 
   return (
     <div ref={pageRef} className="pt-24 sm:pt-40 pb-32 min-h-screen">
@@ -227,9 +265,9 @@ tl.to(".help-line", {
           <span className="help-reveal text-[14px] font-mono uppercase tracking-[0.5em] text-z-muted font-black mb-10 block underline decoration-4 underline-offset-8">
             HELP_CENTER
           </span>
-          <h1 className="help-reveal help-title font-display font-bold text-6xl md:text-9xl tracking-tighter uppercase leading-[0.85] italic">
-            HOW_CAN_WE<br />
-            <span>HELP_YOU?</span>
+          <h1 className="help-reveal help-title font-display font-bold text-6xl md:text-9xl tracking-tighter uppercase leading-[0.85]  ">
+            HOW CAN WE<br />
+            <span>HELP YOU?</span>
           </h1>
           <div className="help-line h-1 bg-z-ink mt-8 max-w-[300px]" />
         </header>
@@ -293,19 +331,19 @@ tl.to(".help-line", {
 
           {/* CONTACT US — BOTTOM */}
           <section id="contact" className="help-card border-2 border-z-border p-8 sm:p-12 shadow-[6px_6px_0px_0px_var(--color-z-shadow)]">
-            <h2 className="font-display font-black uppercase tracking-widest text-lg italic mb-8 border-b-2 border-z-border pb-4">
+            <h2 className="font-display font-black uppercase tracking-widest text-lg   mb-8 border-b-2 border-z-border pb-4">
               CONTACT_SUPPORT
             </h2>
             <ul className="grid grid-cols-1 sm:grid-cols-3 gap-8 font-mono text-sm font-bold uppercase tracking-widest">
-              <li className="flex items-start gap-4">
-                <Mail className="w-5 h-5 shrink-0 mt-0.5" />
+              <li className="flex items-start gap-3">
+                <Mail className="w-4 h-5 shrink-0 mt-0.5" />
                 <a href="mailto:support@postertheory.in" className="text-z-muted hover:text-z-ink transition-colors break-all normal-case">
                   support@postertheory.in
                 </a>
               </li>
               <li className="flex items-start gap-4">
                 <Phone className="w-5 h-5 shrink-0 mt-0.5" />
-                <span className="text-z-muted">+91 XXXXXXXXXX</span>
+                <span className="text-z-muted">{import.meta.env.VITE_PHONE_NUMBER}</span>
               </li>
               <li className="flex items-start gap-4">
                 <Clock className="w-5 h-5 shrink-0 mt-0.5" />
@@ -345,36 +383,42 @@ function PolicyModal({
     <AnimatePresence>
       {policy && (
         <motion.div
-          className="fixed top-10 left-0 w-screen h-screen z-[999999]"
+          className="fixed inset-0 z-[999999] w-screen h-screen"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.25, ease: "easeOut" }}
           onClick={onClose}
         >
-
           {/* BACKDROP */}
           <motion.div
-            
-            className="absolute top-0 left-0 w-full h-full bg-black/80 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/80 backdrop-blur-sm"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            
           />
 
           {/* CENTER WRAPPER */}
-          <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center p-4 sm:p-6">
-
+          <div className="absolute inset-0 flex items-center justify-center p-4 sm:p-6">
+            
             {/* MODAL */}
             <motion.div
-            onClick={(e) => e.stopPropagation()}
-            className="relative w-full max-w-[900px] max-h-[90vh] overflow-hidden border-2 border-z-border bg-z-paper shadow-[10px_10px_0px_0px_var(--color-z-shadow)]"
+              onClick={(e) => e.stopPropagation()}
+              className="
+                relative
+                w-full
+                max-w-[900px]
+                max-h-[80vh]
+                overflow-hidden
+                border-2
+                border-z-border
+                bg-z-paper
+                shadow-[10px_10px_0px_0px_var(--color-z-shadow)]
+              "
               initial={{
                 opacity: 0,
-                y: 50,
-                scale: 0.94,
+                y: 30,
+                scale: 0.96,
               }}
               animate={{
                 opacity: 1,
@@ -383,88 +427,58 @@ function PolicyModal({
               }}
               exit={{
                 opacity: 0,
-                y: 30,
+                y: 20,
                 scale: 0.96,
               }}
               transition={{
-                duration: 0.45,
+                duration: 0.4,
                 ease: [0.16, 1, 0.3, 1],
               }}
             >
 
               {/* HEADER */}
-              <motion.div
-                className="flex items-center justify-between gap-4 border-b-2 border-z-border p-5 sm:p-7"
-                initial={{ opacity: 0, y: -15 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{
-                  delay: 0.15,
-                  duration: 0.35,
-                  ease: "easeOut",
-                }}
-              >
+              <div className="flex items-center justify-between gap-4 border-b-2 border-z-border p-5 sm:p-7">
                 <div>
-                  <motion.p
-                    className="font-mono text-[9px] uppercase tracking-[0.3em] text-z-muted mb-2"
-                    initial={{ opacity: 0, x: -15 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.2, duration: 0.3 }}
-                  >
+                  <p className="font-mono text-[9px] uppercase tracking-[0.3em] text-z-muted mb-2">
                     POSTER_THEORY / LEGAL
-                  </motion.p>
+                  </p>
 
-                  <motion.h2
-                    className="font-display font-black text-2xl sm:text-4xl uppercase tracking-tighter text-z-ink"
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{
-                      delay: 0.25,
-                      duration: 0.4,
-                      ease: "easeOut",
-                    }}
-                  >
+                  <h2 className="font-display font-black text-2xl sm:text-4xl uppercase tracking-tighter text-z-ink">
                     {policy}
-                  </motion.h2>
+                  </h2>
                 </div>
 
-                {/* CLOSE BUTTON */}
-                <motion.button
+                {/* CLOSE */}
+                <button
                   type="button"
                   onClick={onClose}
                   aria-label="Close policy"
-                  className="shrink-0 w-10 h-10 border-2 border-z-border flex items-center justify-center hover:bg-z-ink hover:text-z-paper transition-colors"
-                  initial={{ opacity: 0, rotate: -45, scale: 0.7 }}
-                  animate={{ opacity: 1, rotate: 0, scale: 1 }}
-                  transition={{
-                    delay: 0.25,
-                    duration: 0.35,
-                    ease: "backOut",
-                  }}
-                  whileHover={{
-                    scale: 1.08,
-                    rotate: 90,
-                  }}
-                  whileTap={{
-                    scale: 0.9,
-                  }}
+                  className="
+                    shrink-0
+                    w-10 h-10
+                    border-2 border-z-border
+                    flex items-center justify-center
+                    hover:bg-z-ink
+                    hover:text-z-paper
+                    transition-colors
+                  "
                 >
                   <X className="w-5 h-5" />
-                </motion.button>
-              </motion.div>
+                </button>
+              </div>
 
               {/* CONTENT */}
-              <motion.div
-                className="overflow-y-auto max-h-[calc(90vh-120px)] p-5 sm:p-8 md:p-10"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{
-                  delay: 0.2,
-                  duration: 0.4,
-                  ease: "easeOut",
-                }}
+              <div
+                className="
+                  overflow-y-auto
+                  max-h-[calc(90vh-110px)]
+                  p-5
+                  sm:p-8
+                  md:p-10
+                "
               >
                 <PolicyContent policy={policy} />
-              </motion.div>
+              </div>
 
             </motion.div>
           </div>

@@ -80,8 +80,8 @@ export default function Signup() {
           <p className="text-[10px] font-mono font-bold text-z-ink uppercase mb-4 tracking-[0.4em] underline leading-none decoration-2">
             {step === 'form' ? 'CREATE_ACCOUNT' : 'VERIFY_EMAIL'}
           </p>
-          <h1 className="font-display font-black text-5xl uppercase tracking-tighter italic leading-none text-z-ink">
-            {step === 'form' ? <>JOIN_THE_<span className="text-outline">STUDIO</span></> : <>ENTER_<span className="text-outline">OTP</span></>}
+          <h1 className="font-display font-black text-5xl uppercase tracking-tighter  leading-none text-z-ink">
+            {step === 'form' ? <>SIGN UP</> : <>ENTER <span className="text-outline">OTP</span></>}
           </h1>
         </div>
 

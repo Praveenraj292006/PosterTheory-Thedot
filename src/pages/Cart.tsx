@@ -18,7 +18,7 @@ interface Address {
 }
 
 export default function Cart() {
-  const { cart, removeFromCart, updateQuantity, total, clearCart } = useCart();
+  const { cart, cartLoading, removeFromCart, updateQuantity, total, clearCart } = useCart();
   const { user, token } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -40,8 +40,8 @@ export default function Cart() {
   };
 
   const handleProceedToAddress = async () => {
-    if (!user) {
-      navigate('/login?redirect=cart');
+      if (!user) {
+      navigate('/login?redirect=/cart');
       return;
     }
 
@@ -123,6 +123,20 @@ export default function Cart() {
     );
   }
 
+  if (cartLoading) {
+  return (
+    <div className="pt-24 sm:pt-40 min-h-screen flex items-center justify-center px-6">
+      <div className="text-center">
+        <div className="w-16 h-16 border-4 border-z-border border-t-z-ink rounded-full animate-spin mx-auto mb-6" />
+
+        <p className="font-mono text-[11px] font-black uppercase tracking-[0.25em] text-z-muted">
+          Loading Your Bag...
+        </p>
+      </div>
+    </div>
+  );
+}
+
   if (cart.length === 0 && step === 'cart') {
     return (
       <div className="pt-24 sm:pt-40 pb-32 min-h-screen flex items-center justify-center">
@@ -147,7 +161,7 @@ export default function Cart() {
     <div className="pt-24 sm:pt-40 pb-32 min-h-screen px-6">
       <div className="max-w-7xl mx-auto">
         <header className="mb-20 border-b-4 border-z-border pb-8 flex items-baseline justify-between">
-          <h1 className="font-display font-black text-6xl md:text-8xl uppercase tracking-tighter italic leading-none">
+          <h1 className="font-display font-black text-6xl md:text-8xl uppercase tracking-tighter   leading-none">
             {step === 'cart' && <><span className="text-outline">Your</span>_Bag_</>}
             {step === 'address' && <>Select_<span className="text-outline">Address</span></>}
             {step === 'confirm' && <>Confirm_<span className="text-outline">Order</span></>}
@@ -179,22 +193,32 @@ export default function Cart() {
                         </button>
                       </div>
                       {item.customSpecs && (
-                        <div className="mt-4 p-4 border-2 border-dashed border-z-border bg-z-paper">
+                       <div className="mt-4 p-4 border-2 border-dashed border-z-border bg-z-paper">
                           <span className="text-[9px] font-mono font-black uppercase text-z-muted tracking-widest">
                             SPECS: {item.customSpecs.size} / {item.customSpecs.layout || 'Single'} / {item.customSpecs.printStyle || 'full-bleed'}
                             {item.customSpecs.panelCount > 1 && ` / ${item.customSpecs.panelCount} panels`}
                             {item.customSpecs.frame && item.customSpecs.frame !== 'None' && ` / ${item.customSpecs.frame} Frame`}
-                            {item.customSpecs.material && item.customSpecs.material !== 'PAPER' && ` / ${item.customSpecs.material}`}
+                            {item.customSpecs.material && item.customSpecs.material !== 'PAPER POSTER' && ` / ${item.customSpecs.material}`}
+
+                            {item.customSpecs.material === 'METALLIC POSTER' &&
+                              item.customSpecs.metallicThickness &&
+                              ` / ${item.customSpecs.metallicThickness}`}
                           </span>
-                          {item.customSpecs.material === 'METALLIC SHEET' && (
-                            <p className="text-[9px] font-mono text-z-muted mt-1">Metal poster — Premium metal posters with a sleek finish and long-lasting durability</p>
+
+                          {item.customSpecs.material === 'METALLIC POSTER' && (
+                            <p className="text-[9px] font-mono text-z-muted mt-1">
+                              Metal poster — Premium metal posters with a sleek finish and long-lasting durability
+                            </p>
                           )}
-                          {(!item.customSpecs.material || item.customSpecs.material === 'PAPER') && (
-                            <p className="text-[9px] font-mono text-z-muted mt-1">Art poster — High-quality paper prints with vibrant colors and sharp details</p>
+
+                          {(!item.customSpecs.material || item.customSpecs.material === 'PAPER POSTER') && (
+                            <p className="text-[9px] font-mono text-z-muted mt-1">
+                              Art poster — High-quality paper prints with vibrant colors and sharp details
+                            </p>
                           )}
                         </div>
                       )}
-                      <p className="text-z-ink mt-8 font-display font-black text-2xl italic tracking-tighter">&#8377;{(item.price * item.quantity).toLocaleString()}</p>
+                      <p className="text-z-ink mt-8 font-display font-black text-2xl   tracking-tighter">&#8377;{(item.price * item.quantity).toLocaleString()}</p>
                       {item.quantity > 1 && <p className="text-[10px] font-mono text-z-muted mt-1">&#8377;{item.price.toLocaleString()} &times; {item.quantity}</p>}
                     </div>
                     <div className="flex items-center space-x-6 mt-8 sm:mt-0">
@@ -231,11 +255,11 @@ export default function Cart() {
                   </div>
                   <div className="flex justify-between font-mono text-[13px] font-bold text-z-muted uppercase">
                     <span>Shipping:</span>
-                    <span className="text-z-ink italic">FREE</span>
+                    <span className="text-z-ink  ">FREE</span>
                   </div>
                   <div className="border-t-2 border-z-border pt-8 flex justify-between items-baseline">
                     <span className="font-display font-black text-2xl uppercase tracking-tighter">Total:</span>
-                    <span className="font-display font-black text-5xl text-z-ink tracking-tighter italic">&#8377;{total.toLocaleString()}</span>
+                    <span className="font-display font-black text-5xl text-z-ink tracking-tighter  ">&#8377;{total.toLocaleString()}</span>
                   </div>
                 </div>
 
@@ -275,7 +299,7 @@ export default function Cart() {
               </div>
             ) : (
               <div className="text-center py-12 border-2 border-dashed border-z-border mb-12">
-                <p className="font-display font-black text-xl uppercase text-z-muted italic mb-4">No addresses found</p>
+                <p className="font-display font-black text-xl uppercase text-z-muted   mb-4">No addresses found</p>
                 <Link to="/dashboard" className="sticker-btn bg-z-ink text-z-paper inline-block">Add Address in Dashboard</Link>
               </div>
             )}
@@ -326,7 +350,7 @@ export default function Cart() {
               <div className="border-2 border-z-ink p-8 bg-z-ink text-z-paper">
                 <div className="flex justify-between items-baseline">
                   <span className="font-display font-black text-2xl uppercase">Total</span>
-                  <span className="font-display font-black text-4xl italic">&#8377;{total.toLocaleString()}</span>
+                  <span className="font-display font-black text-4xl  ">&#8377;{total.toLocaleString()}</span>
                 </div>
               </div>
 

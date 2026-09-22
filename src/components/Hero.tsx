@@ -180,7 +180,7 @@ export default function Hero() {
             className="text-[12px] sm:text-[14px] font-[Montserrat] font-700 text-z-muted leading-relaxed mb-6 sm:mb-8 max-w-md"
           >
             Curated poster prints in Anime, Movies, Music, Minimal & more.
-            Available in A3 to Pocket sizes. Printed on 300 GSM matte paper.
+            Available in A3+ to Pocket sizes. Printed on 300 GSM matte paper.
           </p>
 
           {/* Buttons */}
@@ -210,7 +210,7 @@ export default function Hero() {
           >
             <div>
               <p className="font-display font-black text-xl sm:text-2xl text-z-paper">
-                500+
+                4000+
               </p>
               <p className="text-[8px] sm:text-[9px] font-mono text-z-muted uppercase">
                 Happy Customers
@@ -221,7 +221,7 @@ export default function Hero() {
 
             <div>
               <p className="font-display font-black text-xl sm:text-2xl text-z-paper">
-                6
+                8
               </p>
               <p className="text-[8px] sm:text-[9px] font-mono text-z-muted uppercase">
                 Print Sizes
@@ -232,7 +232,7 @@ export default function Hero() {
 
             <div>
               <p className="font-display font-black text-xl sm:text-2xl text-z-paper">
-                ₹69
+                ₹15
               </p>
               <p className="text-[8px] sm:text-[9px] font-mono text-z-muted uppercase">
                 Starting At

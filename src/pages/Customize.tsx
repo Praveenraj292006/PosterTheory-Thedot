@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef  } from 'react';
 import { Plus, Eye, Download, X, ChevronRight, ImagePlus } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
@@ -9,6 +9,7 @@ import DetailsPanel from '../components/customize/DetailsPanel';
 import PageQueue from '../components/customize/PageQueue';
 import { useCanvasEditor } from '../hooks/useCanvasEditor';
 import { useCustomizeConfig } from '../hooks/useCustomizeConfig';
+import type { MetallicThickness } from '../config/paperSizes';
 
 const TUTORIAL_STEPS = [
   { title: 'Add Image', desc: 'Click "ADD IMAGE" to create a new page for your print.' },
@@ -16,6 +17,8 @@ const TUTORIAL_STEPS = [
   { title: 'Upload & Adjust', desc: 'Upload your image, then drag/zoom/rotate it on the canvas.' },
   { title: 'Preview & Cart', desc: 'Preview your design, then add to cart when ready.' },
 ];
+
+
 
 export default function Customize() {
   const { addToCart } = useCart();
@@ -31,13 +34,36 @@ export default function Customize() {
   const [frameColor, setFrameColor] = useState<'Black' | 'White'>('Black');
   const [selectedMaterial, setSelectedMaterial] = useState('PAPER');
 
+  const [metallicThickness, setMetallicThickness] = useState<MetallicThickness>('0.45mm');
+
   useEffect(() => {
     const seen = localStorage.getItem('customize_tutorial_seen');
     if (!seen) setShowTutorial(true);
   }, []);
 
-  const editor = useCanvasEditor();
+  const presetApplied = useRef(false);
+
+    useEffect(() => {
+      if (!presetSize || configLoading || presetApplied.current) return;
+      if (!paperSizes[presetSize]) return;
+      presetApplied.current = true;
+      editor.addPage(presetSize);
+    }, [presetSize, configLoading, paperSizes]);
+
+    const editor = useCanvasEditor(
+      paperSizes,
+      customMargins,
+      portraitOnly
+    );
   const { activePage, pages, activePageIdx, dims, paperMm, filledPages, saving, previewMode, imageDims, canvasElRef, fileInputRef } = editor;
+
+  const handleSetMaterial = (material: string) => {
+  setSelectedMaterial(material);
+
+  if (material === 'METALLIC POSTER') {
+    setMetallicThickness('0.45mm');
+  }
+};
 
   // Calculate scale for mobile
   const [canvasScale, setCanvasScale] = useState(1);
@@ -85,24 +111,51 @@ export default function Customize() {
   };
 
   const doAddToCart = () => {
-    for (let i = 0; i < filledPages.length; i++) {
-      const page = filledPages[i];
-      addToCart({
-        id: Date.now() + i,
-        title: `${page.size} ${page.orientation} ${page.layout} Print`,
-        price: getPagePrice(page),
-        image: page.previewUrl || '',
-        collection: 'CUSTOM',
-        size: `${page.size} ${page.orientation}`,
-        designId: 'custom-' + page.id,
-        isCustom: true,
-        customSpecs: { size: page.size, unitCount: page.panelCount, layout: page.layout, panelCount: page.panelCount, printStyle: page.printStyle, material: selectedMaterial, frame: withFrame ? frameColor : 'None', fileNames: [`${page.fileName} (${page.size} ${page.orientation} ${page.printStyle} ${page.layout})`] }
-      });
-    }
-    localStorage.removeItem('customize_pages');
-    localStorage.removeItem('customize_activeIdx');
-    navigate('/cart');
-  };
+  for (let i = 0; i < filledPages.length; i++) {
+    const page = filledPages[i];
+
+    addToCart({
+      id: Date.now() + i,
+      title:
+      selectedMaterial === 'METALLIC POSTER'
+    ? `Metalic Poster (${metallicThickness})`
+    : `${page.size} ${page.orientation} ${page.layout} Print`,
+      price: getPagePrice(page),
+      image: page.previewUrl || '',
+      collection: 'CUSTOM',
+      size: `${page.size} ${page.orientation}`,
+      designId: 'custom-' + page.id,
+      isCustom: true,
+
+      customSpecs: {
+        size: page.size,
+        unitCount: page.panelCount,
+        layout: page.layout,
+        panelCount: page.panelCount,
+        printStyle: page.printStyle,
+
+        material: selectedMaterial,
+
+        // IMPORTANT
+        metallicThickness:
+          selectedMaterial === 'METALLIC POSTER'
+            ? metallicThickness
+            : undefined,
+
+        frame: withFrame ? frameColor : 'None',
+
+        fileNames: [
+          `${page.fileName} (${page.size} ${page.orientation} ${page.printStyle} ${page.layout})`,
+        ],
+      },
+    });
+  }
+
+  localStorage.removeItem('customize_pages');
+  localStorage.removeItem('customize_activeIdx');
+
+  navigate('/cart');
+};
 
   const handleAddToCart = () => {
     if (filledPages.length === 0) { alert("ADD_IMAGES_FIRST"); return; }
@@ -173,12 +226,11 @@ export default function Customize() {
         {/* Header */}
         <header className="mb-6 sm:mb-12 border-b-4 border-z-border pb-6 sm:pb-10 flex flex-col md:flex-row md:items-end justify-between">
           <div>
-            <p className="text-[11px] sm:text-[13px] font-mono uppercase tracking-[0.3em] sm:tracking-[0.5em] text-z-ink   mb-2 sm:mb-4">Custom_Print_Studio</p>
-            <h1 className="font-display  text-4xl sm:text-6xl md:text-8xl uppercase tracking-tighter leading-none italic">
-              <span >Design</span>_Lab
+            <h1 className="font-display  text-4xl sm:text-6xl md:text-8xl uppercase tracking-tighter leading-none  ">
+              <span >Design</span> Lab
             </h1>
           </div>
-          <Logo size="md" className="mt-4 md:mt-0 hidden sm:block" />
+          
         </header>
 
         {/* Preview Floating Window */}
@@ -290,7 +342,7 @@ export default function Customize() {
               <p className="text-[9px] sm:text-[11px] font-mono text-z-ink/60 dark:text-z-ink/70 uppercase tracking-wider mt-1">Choose size, orientation & style after adding a page</p>
             </div>
             <button onClick={() => editor.addPage(presetSize || undefined)} className="sticker-btn bg-z-ink text-z-paper text-[10px] sm:text-[11px] px-4 sm:px-5 py-2 sm:py-2.5 inline-flex items-center gap-2 active:scale-95 w-full sm:w-auto justify-center">
-              <ImagePlus className="w-4 h-4" /> ADD IMAGE
+              <ImagePlus className="w-4 h-4" /> ADD DESIGN
             </button>
           </div>
         </div>
@@ -303,7 +355,7 @@ export default function Customize() {
                 className={`px-4 py-2 text-[11px] font-mono   uppercase border-2 transition-all flex items-center gap-2 active:scale-95 ${
                   activePageIdx === idx ? 'bg-z-ink text-z-paper border-z-ink' : 'bg-z-paper text-z-ink border-z-border hover:border-z-ink'
                 }`}>
-                P{idx + 1} &middot; {page.size}{page.orientation[0].toUpperCase()} &middot; {page.layout}
+                D{idx + 1} &middot; {page.size}{page.orientation[0].toUpperCase()} &middot; {page.layout}
                 {page.hasImage && <div className="w-2 h-2 rounded-full bg-green-400" />}
               </button>
             ))}
@@ -327,6 +379,8 @@ export default function Customize() {
                   withFrame={withFrame}
                   frameColor={frameColor}
                   selectedMaterial={selectedMaterial}
+                  metallicThickness={metallicThickness}
+                  onSetMetallicThickness={setMetallicThickness}
                   frameOnly={frameOnly}
                   onChangeSize={(s) => editor.changeSize(s, paperSizes)}
                   onToggleOrientation={editor.toggleOrientation}
@@ -423,6 +477,8 @@ export default function Customize() {
                   withFrame={withFrame}
                   frameColor={frameColor}
                   selectedMaterial={selectedMaterial}
+                  metallicThickness={metallicThickness}
+                  onSetMetallicThickness={setMetallicThickness}
                   frameOnly={frameOnly}
                   onChangeSize={(s) => editor.changeSize(s, paperSizes)}
                   onToggleOrientation={editor.toggleOrientation}
@@ -453,7 +509,7 @@ export default function Customize() {
                   {paperMm.w} &times; {paperMm.h} mm
                   {activePage.printStyle === 'white-margin' && (
                     <span className="text-z-ink/50 dark:text-z-ink/60 ml-2">
-                      (image: {paperMm.w - (activePage.size.startsWith('A') ? 10 : (customMargins[activePage.size]?.left || 5) + (customMargins[activePage.size]?.right || 5))}&times;{paperMm.h - (activePage.size.startsWith('A') ? 10 : (customMargins[activePage.size]?.top || 5) + (customMargins[activePage.size]?.bottom || 5))}mm + border on export)
+                      (image: {paperMm.w - (activePage.size.startsWith('A') ? 10 : (customMargins[activePage.size]?.left || 5) + (customMargins[activePage.size]?.right || 5))}&times;{paperMm.h - (activePage.size.startsWith('A') ? 10 : (customMargins[activePage.size]?.top || 5) + (customMargins[activePage.size]?.bottom || 5))}mm)
                     </span>
                   )}
                 </div>
@@ -508,7 +564,7 @@ export default function Customize() {
         ) : (
           <div className="border-4 border-dashed border-z-border py-24 flex flex-col items-center justify-center">
             <Plus className="w-10 h-10 text-z-ink/30 dark:text-z-ink/40 mb-4" />
-            <p className="font-display   text-3xl uppercase tracking-tighter text-z-ink/60 dark:text-z-ink/70 italic">Create a page to start</p>
+            <p className="font-display   text-3xl uppercase tracking-tighter text-z-ink/60 dark:text-z-ink/70  ">Create a page to start</p>
             <p className="font-mono text-[12px] uppercase tracking-widest text-z-ink/40 dark:text-z-ink/50 mt-2">Click ADD IMAGE above to begin</p>
           </div>
         )}

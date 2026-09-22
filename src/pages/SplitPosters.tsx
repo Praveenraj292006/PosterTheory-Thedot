@@ -75,7 +75,7 @@ export default function SplitPosters() {
       <div className="max-w-[1440px] mx-auto px-6 pt-20">
         <div className="flex items-end justify-between gap-6 flex-wrap mb-10 border-b-2 border-z-border pb-6">
           <div>
-            <h2 className="font-display font-black uppercase italic text-3xl md:text-4xl tracking-tight">
+            <h2 className="font-display font-black uppercase   text-3xl md:text-4xl tracking-tight">
               Shop split posters
             </h2>
             <p className="font-mono text-xs text-z-muted uppercase tracking-widest mt-3">

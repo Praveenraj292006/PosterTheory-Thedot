@@ -64,6 +64,8 @@ export default function Shop() {
   const searchQuery = searchParams.get('q');
   const tagQuery = searchParams.get('tag');
 
+  const frameFilter = searchParams.get("frame");
+
   // Close search dropdown on outside click
   useEffect(() => {
     const handler = (e: MouseEvent) => { if (searchRef.current && !searchRef.current.contains(e.target as Node)) setShowSearchDrop(false); };
@@ -204,6 +206,7 @@ export default function Shop() {
       const match = sizes.find(s => s.name === sizeFilter);
       if (match) data = data.filter(p => p.available_sizes?.includes(match.id));
     }
+   
     if (orientationFilter) data = data.filter(p => p.orientation === orientationFilter || p.orientation === 'both');
     if (
       statusFilter &&
@@ -233,7 +236,7 @@ export default function Shop() {
   const paginated = useMemo(() => filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE), [filtered, page]);
 
   // Reset page when filters change
-  useEffect(() => { setPage(1); }, [collectionFilter, layoutFilter, statusFilter, sizeFilter, orientationFilter, searchQuery, tagQuery]);
+  useEffect(() => { setPage(1); }, [collectionFilter, layoutFilter, statusFilter, sizeFilter, orientationFilter, searchQuery, tagQuery, frameFilter]);
 
   const setFilter = (key: string, value: string | null) => {
     const newParams = new URLSearchParams(searchParams);
@@ -241,9 +244,10 @@ export default function Shop() {
     else newParams.set(key, value);
     setSearchParams(newParams);
   };
+  const excludedSizes = ['7x5', '4x4'];
 
   const clearAll = () => setSearchParams({});
-  const activeCount = [collectionFilter, layoutFilter, statusFilter, sizeFilter, orientationFilter, tagQuery].filter(Boolean).length;
+  const activeCount = [collectionFilter, layoutFilter, statusFilter, sizeFilter, orientationFilter, tagQuery,frameFilter,].filter(Boolean).length;
 
   const FilterContent = () => (
     <>
@@ -254,11 +258,27 @@ export default function Shop() {
         ))}
       </FilterGroup>
 
+     
+
       <FilterGroup title="Paper Size">
-        <FilterPill active={!sizeFilter} onClick={() => setFilter('size', null)}>All</FilterPill>
-        {sizes.map(s => (
-          <FilterPill key={s.id} active={sizeFilter === s.name} onClick={() => setFilter('size', s.name)}>{s.name}</FilterPill>
-        ))}
+        <FilterPill
+          active={!sizeFilter}
+          onClick={() => setFilter('size', null)}
+        >
+          All
+        </FilterPill>
+
+        {sizes
+          .filter(s => !excludedSizes.includes(s.name))
+          .map(s => (
+            <FilterPill
+              key={s.id}
+              active={sizeFilter === s.name}
+              onClick={() => setFilter('size', s.name)}
+            >
+              {s.name}
+            </FilterPill>
+          ))}
       </FilterGroup>
 
       <FilterGroup title="Orientation">
@@ -267,12 +287,33 @@ export default function Shop() {
         <FilterPill active={orientationFilter === 'landscape'} onClick={() => setFilter('orientation', 'landscape')}>Landscape</FilterPill>
       </FilterGroup>
 
-      <FilterGroup title="Layout">
-        <FilterPill active={!layoutFilter} onClick={() => setFilter('layout', null)}>All</FilterPill>
-        {layouts.map(l => (
-          <FilterPill key={l.id} active={layoutFilter === l.name} onClick={() => setFilter('layout', l.name)}>{l.name} ({l.panel_count}P)</FilterPill>
-        ))}
+      
+
+      <FilterGroup title="Frames">
+        {/* FRAMES */}
+       <FilterPill
+    active={!frameFilter}
+    onClick={() => setFilter('frame', null)}
+  >
+    None
+  </FilterPill>
+
+  <FilterPill
+    active={frameFilter === 'black'}
+    onClick={() => setFilter('frame', 'black')}
+  >
+    Black Matt
+  </FilterPill>
+
+  <FilterPill
+    active={frameFilter === 'white'}
+    onClick={() => setFilter('frame', 'white')}
+  >
+    White Matt
+  </FilterPill>
+
       </FilterGroup>
+
 
       <FilterGroup title="Status">
         <FilterPill active={!statusFilter} onClick={() => setFilter('status', null)}>All</FilterPill>
@@ -280,6 +321,9 @@ export default function Shop() {
           <FilterPill key={f.key} active={statusFilter === f.label} onClick={() => setFilter('status', f.label)}>{f.label}</FilterPill>
         ))}
       </FilterGroup>
+
+
+      
     </>
   );
 
@@ -290,7 +334,7 @@ export default function Shop() {
       <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-12">
         <header className="mb-8 sm:mb-16 flex flex-col xl:flex-row xl:items-end justify-between border-b-4 border-z-border pb-6 sm:pb-12 gap-4 sm:gap-8">
           <div className="flex-1 min-w-0">
-            <h1 className="font-display font-bold  text-4xl sm:text-8xl lg:text-9xl uppercase tracking-tighter leading-none italic">
+            <h1 className="font-display font-bold  text-4xl sm:text-8xl lg:text-9xl uppercase tracking-tighter leading-none  ">
               <span >Collections</span>
             </h1>
             <p className="text-[14px] sm:text-[30px] font-mono text-red-500 uppercase mt-2 sm:mt-4 tracking-widest">All A series Sizes</p>
@@ -365,6 +409,16 @@ export default function Shop() {
                     {sizeFilter} <X className="w-2.5 h-2.5 cursor-pointer" onClick={() => setFilter('size', null)} />
                   </span>
                 )}
+                {/* Frame */}
+                {frameFilter && (
+                  <span className="inline-flex items-center gap-1 px-2 py-1 bg-z-ink text-z-paper text-[9px] font-mono uppercase">
+                    {frameFilter === 'black' ? 'Black Matt' : 'White Matt'}
+                    <X
+                      className="w-2.5 h-2.5 cursor-pointer"
+                      onClick={() => setFilter('frame', null)}
+                    />
+                  </span>
+                )}
                 {orientationFilter && (
                   <span className="inline-flex items-center gap-1 px-2 py-1 bg-z-ink text-z-paper text-[9px] font-mono uppercase">
                     {orientationFilter} <X className="w-2.5 h-2.5 cursor-pointer" onClick={() => setFilter('orientation', null)} />
@@ -411,7 +465,15 @@ export default function Shop() {
               <>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4  gap-y-12 ">
                   {paginated.map((p: any) => (
-                    <ProductCard key={p.id} {...p} />
+                    <ProductCard
+                      key={p.id}
+                      {...p}
+                      frameColor={
+                        frameFilter === "black" || frameFilter === "white"
+                          ? frameFilter
+                          : undefined
+                      }
+                    />
                   ))}
                 </div>
                 {totalPages > 0 && (
@@ -426,7 +488,7 @@ export default function Shop() {
               </>
             ) : (
               <div className="py-32 text-center bg-z-paper border-4 border-dashed border-z-border">
-                <p className="font-display  text-4xl text-z-muted uppercase italic">No results found.</p>
+                <p className="font-display  text-4xl text-z-muted uppercase  ">No results found.</p>
                 <p className="font-mono text-[12px] font-bold text-z-muted mt-4 uppercase tracking-[0.3em]">Try adjusting your filters.</p>
               </div>
             )}

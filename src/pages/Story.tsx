@@ -8,14 +8,14 @@ export default function Story() {
       <div className="max-w-[1440px] mx-auto px-6">
         <header className="mb-32 text-center border-b-4 border-z-border pb-24">
             <span className="text-[14px] font-mono uppercase tracking-[0.5em] text-z-muted font-black mb-10 block underline decoration-4 underline-offset-8">THE_GENESIS_FILE</span>
-            <h1 className="font-display font-black text-6xl md:text-9xl tracking-tighter uppercase leading-[0.8] italic">
-              BORN_FROM_A<br/>
-              NEED_FOR_<span className="text-outline">STILLNESS.</span>
+            <h1 className="font-display font-black text-6xl md:text-9xl tracking-tighter uppercase leading-[0.8]  ">
+              BORN FROM A<br/>
+              NEED FOR STILLNESS.
             </h1>
         </header>
 
         <div className="max-w-4xl mx-auto space-y-24 text-z-ink leading-relaxed">
-          <p className="font-display font-black text-4xl sm:text-5xl tracking-tighter uppercase italic text-center text-outline">
+          <p className="font-display font-black text-4xl sm:text-5xl tracking-tighter uppercase   text-center text-outline">
             "In a world that never stops talking, your space should be the frequency where you sync."
           </p>
           

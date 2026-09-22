@@ -1,51 +1,118 @@
-import nodemailer from "nodemailer";
+import { Resend } from "resend";
 
-const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 465,
-  secure: true,
-  auth: {
-    user: process.env.SMTP_EMAIL,
-    pass: process.env.SMTP_PASSWORD,
-  },
-  family: 4,
-  connectionTimeout: 10000,
-  greetingTimeout: 10000,
-  socketTimeout: 10000,
-} as any);
+const resend = new Resend(process.env.RESEND_API_KEY);
 
-// Sanitize values before logging to prevent log injection
-const sanitizeForLog = (val: string): string => val.replace(/[\n\r\t]/g, '').slice(0, 100);
+export const sendOtpEmail = async (
+  email: string,
+  otp: string,
+  name?: string,
+  type: "signup" | "reset" = "signup"
+) => {
+  const isReset = type === "reset";
 
-export const sendOtpEmail = async (to: string, otp: string, name: string, type: 'signup' | 'reset' = 'signup') => {
-  console.log(`[OTP] ${type.toUpperCase()} code for ${sanitizeForLog(to)}: ${sanitizeForLog(otp)}`);
+  const subject = isReset
+    ? "Reset your Poster Theory password"
+    : "Verify your Poster Theory account";
 
-  const subject = type === 'reset' ? 'Reset your password - Poster Theory' : 'Verify your email - Poster Theory';
-  const heading = type === 'reset' ? `Hey ${name},<br/>Reset your password` : `Hey ${name},`;
-  const description = type === 'reset' ? 'Here\'s your password reset code:' : 'Here\'s your verification code:';
+  const heading = isReset
+    ? "RESET YOUR PASSWORD"
+    : "VERIFY YOUR EMAIL";
 
-  const mailOptions = {
-    from: `"Poster Theory" <${process.env.SMTP_EMAIL}>`,
-    to,
+  const message = isReset
+    ? "Use the verification code below to reset your Poster Theory password."
+    : "Use the verification code below to verify your Poster Theory account.";
+
+  const { data, error } = await resend.emails.send({
+    from: "Poster Theory <onboarding@resend.dev>",
+    to: [email],
     subject,
+
     html: `
-      <div style="font-family: monospace; max-width: 480px; margin: 0 auto; padding: 40px; border: 2px solid #000;">
-        <h1 style="font-size: 24px; text-transform: uppercase; letter-spacing: -1px;">${heading}</h1>
-        <p style="font-size: 14px; color: #666; text-transform: uppercase;">${description}</p>
-        <div style="background: #000; color: #fff; padding: 20px; text-align: center; margin: 20px 0; font-size: 32px; letter-spacing: 8px; font-weight: bold;">
+      <div style="
+        font-family: Arial, sans-serif;
+        max-width: 500px;
+        margin: 0 auto;
+        padding: 30px;
+        color: #111;
+      ">
+
+        <h2 style="
+          margin-bottom: 8px;
+          font-size: 24px;
+        ">
+          POSTER THEORY
+        </h2>
+
+        ${
+          name
+            ? `<p style="font-size: 14px;">Hi ${name},</p>`
+            : ""
+        }
+
+        <h3 style="
+          font-size: 18px;
+          margin-top: 25px;
+        ">
+          ${heading}
+        </h3>
+
+        <p style="
+          font-size: 14px;
+          line-height: 1.6;
+        ">
+          ${message}
+        </p>
+
+        <div style="
+          background: #f4f4f4;
+          padding: 20px;
+          text-align: center;
+          font-size: 32px;
+          font-weight: bold;
+          letter-spacing: 8px;
+          margin: 25px 0;
+          border: 1px solid #ddd;
+        ">
           ${otp}
         </div>
-        <p style="font-size: 11px; color: #999; text-transform: uppercase;">This code expires in 10 minutes. Do not share it with anyone.</p>
-        <hr style="border: 1px dashed #ccc; margin: 20px 0;" />
-        <p style="font-size: 10px; color: #aaa; text-transform: uppercase; letter-spacing: 2px;">POSTER THEORY // THE ARCHIVE</p>
+
+        <p style="
+          font-size: 14px;
+          line-height: 1.6;
+        ">
+          This code will expire in <strong>10 minutes</strong>.
+        </p>
+
+        <p style="
+          color: #777;
+          font-size: 13px;
+          line-height: 1.5;
+          margin-top: 30px;
+        ">
+          If you didn't request this code, you can safely ignore this email.
+        </p>
+
+        <hr style="
+          border: none;
+          border-top: 1px solid #ddd;
+          margin: 30px 0;
+        ">
+
+        <p style="
+          color: #999;
+          font-size: 11px;
+        ">
+          © Poster Theory
+        </p>
+
       </div>
     `,
-  };
+  });
 
-  try {
-    await transporter.sendMail(mailOptions);
-  } catch (err) {
-    console.error(`[MAILER] Failed to send email to ${sanitizeForLog(to)}:`, (err as any).code || err);
-    // Don't throw — signup should still succeed, OTP is logged above
+  if (error) {
+    console.error("Resend email error:", error);
+    throw new Error("Failed to send OTP email");
   }
+
+  return data;
 };

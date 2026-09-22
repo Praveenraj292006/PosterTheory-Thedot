@@ -27,7 +27,8 @@ export default function ProductModal({ product, onClose }: Props) {
   const [quantity, setQuantity] = useState(1);
   const [added, setAdded] = useState(false);
   const [currentImg, setCurrentImg] = useState(0);
-  const [selectedMaterial, setSelectedMaterial] = useState('PAPER');
+  const [selectedMaterial, setSelectedMaterial] = useState('PAPER POSTER');
+  const [metallicThickness, setMetallicThickness] = useState<'0.45mm' | '1mm'>('0.45mm');
   const [withFrame, setWithFrame] = useState(false);
   const [frameColor, setFrameColor] = useState<'Black' | 'White'>('Black');
 
@@ -191,6 +192,101 @@ export default function ProductModal({ product, onClose }: Props) {
             <h2 className="font-display font-black text-xl sm:text-2xl uppercase tracking-tighter text-z-ink mb-1">{product.title}</h2>
             <p className="text-[10px] font-mono text-z-muted uppercase mb-3">{product.collection_name || 'Poster'}</p>
 
+            {/* 2. Size — filtered by frame choice */}
+            {availableSizes.length > 0 && (
+              <div className="mb-4">
+                <label className="text-[9px] font-mono font-black uppercase tracking-widest text-z-muted mb-2 block">Size</label>
+                <div className="flex flex-wrap gap-2">
+                  {visibleSizes.map(s => (
+                    <button key={s.name} onClick={() => setSelectedSize(s.name)}
+                      className={`px-3 py-1.5 text-[10px] font-mono font-black uppercase border-2 transition-all active:scale-95 ${
+                        selectedSize === s.name ? 'bg-z-ink text-z-paper border-z-ink' : 'border-z-border hover:border-z-ink text-z-ink'
+                      }`}>
+                      {s.name}
+                    </button>
+                  ))}
+                  {visibleSizes.length === 0 && <p className="text-[10px] font-mono text-z-muted  ">No sizes available for this option</p>}
+                </div>
+              </div>
+            )}
+
+             {/* Print Style */}
+            {panelCount <= 1 && !SINGLE_ONLY_SIZES.includes(selectedSize) && !isBookmark && (
+              <div className="mb-4">
+                <label className="text-[9px] font-mono font-black uppercase tracking-widest text-z-muted mb-2 block">Print Style</label>
+                <div className="flex gap-2">
+                  <button onClick={() => setPrintStyle('full-bleed')}
+                    className={`px-3 py-1.5 text-[10px] font-mono font-black uppercase border-2 transition-all active:scale-95 ${
+                      printStyle === 'full-bleed' ? 'bg-z-ink text-z-paper border-z-ink' : 'border-z-border hover:border-z-ink text-z-ink'
+                    }`}>Borderless</button>
+                  <button onClick={() => setPrintStyle('white-margin')}
+                    className={`px-3 py-1.5 text-[10px] font-mono font-black uppercase border-2 transition-all active:scale-95 ${
+                      printStyle === 'white-margin' ? 'bg-z-ink text-z-paper border-z-ink' : 'border-z-border hover:border-z-ink text-z-ink'
+                    }`}>White Margin</button>
+                </div>
+              </div>
+            )}
+
+            {/* Material */}
+            <div className="mb-4">
+              <label className="text-[9px] font-mono font-black uppercase tracking-widest text-z-muted mb-2 block">
+                Material
+              </label>
+
+              <div className="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={() => setSelectedMaterial("PAPER POSTER")}
+                  className={`px-3 py-1.5 text-[10px] font-mono font-black uppercase border-2 transition-all active:scale-95 ${
+                    selectedMaterial === "PAPER"
+                      ? "bg-z-ink text-z-paper border-z-ink"
+                      : "border-z-border hover:border-z-ink text-z-ink"
+                  }`}
+                >
+                  Paper Poster
+                </button>
+
+                <button
+                  type="button"
+                 onClick={() => {
+                      setSelectedMaterial("METALLIC POSTER");
+                      setMetallicThickness('0.45mm');
+                    }}
+                  className={`px-3 py-1.5 text-[10px] font-mono font-black uppercase border-2 transition-all active:scale-95 ${
+                    selectedMaterial === "METALLIC POSTER"
+                      ? "bg-z-ink text-z-paper border-z-ink"
+                      : "border-z-border hover:border-z-ink text-z-ink"
+                  }`}
+                >
+                  Metal Poster
+                </button>
+              </div>
+            </div>
+
+            {selectedMaterial === 'METALLIC POSTER' && (
+              <div className="mb-3">
+                <label className="text-[9px] font-mono font-black uppercase tracking-widest text-z-muted mb-2 block">
+                  Metallic Thickness
+                </label>
+
+                <div className="flex gap-2">
+                  {(['0.45mm', '1mm'] as const).map((thickness) => (
+                    <button
+                      key={thickness}
+                      type="button"
+                      onClick={() => setMetallicThickness(thickness)}
+                      className={`px-3 py-1.5 text-[10px] font-mono font-black uppercase border-2 transition-all active:scale-95 ${
+                        metallicThickness === thickness
+                          ? 'bg-z-ink text-z-paper border-z-ink'
+                          : 'border-z-border hover:border-z-ink text-z-ink'
+                      }`}
+                    >
+                      {thickness === '0.45mm' ? '0.45 mm' : '1 mm'}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
             {/* 1. Frame / No Frame — hidden for Bookmark/Polaroid/Pocket */}
             {!isNoFrame && (
               <div className="mb-4">
@@ -221,7 +317,7 @@ export default function ProductModal({ product, onClose }: Props) {
                       {s.name}
                     </button>
                   ))}
-                  {visibleSizes.length === 0 && <p className="text-[10px] font-mono text-z-muted italic">No sizes available for this option</p>}
+                  {visibleSizes.length === 0 && <p className="text-[10px] font-mono text-z-muted  ">No sizes available for this option</p>}
                 </div>
               </div>
             )}
@@ -245,7 +341,7 @@ export default function ProductModal({ product, onClose }: Props) {
                     <p className="text-[9px] font-mono text-z-muted mt-1">1 inch frame · Matt finish · +&#8377;{frameEntry.price}</p>
                   </div>
                 )}
-                {!frameEntry && <p className="text-[10px] font-mono text-z-muted mb-4 italic">Frame not available for selected size</p>}
+                {!frameEntry && <p className="text-[10px] font-mono text-z-muted mb-4  ">Frame not available for selected size</p>}
                 {materialPricing.length > 0 && (
                   <div className="mb-4">
                     <label className="text-[9px] font-mono font-black uppercase tracking-widest text-z-muted mb-2 block">Material</label>
@@ -260,7 +356,7 @@ export default function ProductModal({ product, onClose }: Props) {
                       ))}
                     </div>
                     <p className="text-[9px] font-mono text-z-muted mt-1.5 leading-relaxed">
-                      {selectedMaterial === 'METALLIC SHEET'
+                      {selectedMaterial === 'METALLIC POSTER'
                         ? 'Metal poster — Premium metal posters with a sleek finish and long-lasting durability'
                         : 'Art poster — High-quality paper prints with vibrant colors and sharp details'}
                     </p>
@@ -284,39 +380,9 @@ export default function ProductModal({ product, onClose }: Props) {
               </div>
             )}
 
-            {/* Layout — hidden for Bookmark (single only) */}
-            {availableLayouts.length > 0 && !isBookmark && (
-              <div className="mb-4">
-                <label className="text-[9px] font-mono font-black uppercase tracking-widest text-z-muted mb-2 block">Layout</label>
-                <div className="flex flex-wrap gap-2">
-                  {availableLayouts.map(l => (
-                    <button key={l.name} onClick={() => setSelectedLayout(l.name)}
-                      className={`px-3 py-1.5 text-[10px] font-mono font-black uppercase border-2 transition-all active:scale-95 ${
-                        selectedLayout === l.name ? 'bg-z-ink text-z-paper border-z-ink' : 'border-z-border hover:border-z-ink text-z-ink'
-                      }`}>
-                      {l.name} {l.panel_count > 1 && `(${l.panel_count})`}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
+           
 
-            {/* Print Style */}
-            {panelCount <= 1 && !SINGLE_ONLY_SIZES.includes(selectedSize) && !isBookmark && (
-              <div className="mb-4">
-                <label className="text-[9px] font-mono font-black uppercase tracking-widest text-z-muted mb-2 block">Print Style</label>
-                <div className="flex gap-2">
-                  <button onClick={() => setPrintStyle('full-bleed')}
-                    className={`px-3 py-1.5 text-[10px] font-mono font-black uppercase border-2 transition-all active:scale-95 ${
-                      printStyle === 'full-bleed' ? 'bg-z-ink text-z-paper border-z-ink' : 'border-z-border hover:border-z-ink text-z-ink'
-                    }`}>Borderless</button>
-                  <button onClick={() => setPrintStyle('white-margin')}
-                    className={`px-3 py-1.5 text-[10px] font-mono font-black uppercase border-2 transition-all active:scale-95 ${
-                      printStyle === 'white-margin' ? 'bg-z-ink text-z-paper border-z-ink' : 'border-z-border hover:border-z-ink text-z-ink'
-                    }`}>White Margin</button>
-                </div>
-              </div>
-            )}
+            
 
             {/* Quantity */}
             <div className="mb-5">
@@ -346,6 +412,12 @@ export default function ProductModal({ product, onClose }: Props) {
                 {!isNoFrame && materialExtra > 0 && (
                   <div className="flex justify-between text-[9px] font-mono text-z-muted uppercase">
                     <span>Material ({selectedMaterial})</span><span>+&#8377;{materialExtra}</span>
+                  </div>
+                )}
+                {selectedMaterial === 'METALLIC POSTER' && (
+                  <div className="flex justify-between text-[9px] font-mono text-z-muted uppercase">
+                    <span>Thickness</span>
+                    <span>{metallicThickness}</span>
                   </div>
                 )}
                 {panelCount > 1 && (

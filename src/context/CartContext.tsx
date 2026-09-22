@@ -29,6 +29,29 @@ interface CartContextType {
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
+const GUEST_CART_KEY = 'guest_cart';
+
+const getGuestCart = (): CartItem[] => {
+  try {
+    const saved = localStorage.getItem(GUEST_CART_KEY);
+    return saved ? JSON.parse(saved) : [];
+  } catch {
+    return [];
+  }
+};
+
+const saveGuestCart = (items: CartItem[]) => {
+  try {
+    localStorage.setItem(GUEST_CART_KEY, JSON.stringify(items));
+  } catch {}
+};
+
+const clearGuestCart = () => {
+  try {
+    localStorage.removeItem(GUEST_CART_KEY);
+  } catch {}
+};
+
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [cart, setCart] = useState<CartItem[]>(() => {
     try {
@@ -37,56 +60,121 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } catch { return []; }
   });
   const [cartLoading, setCartLoading] = useState(false);
+  
   const { user, token } = useAuth();
   const prevUserId = useRef<number | null>(null);
   const syncTimeout = useRef<any>(null);
+  const isInitialSyncing = useRef(false);
+
+ useEffect(() => {
+  const loadCart = async () => {
+    try {
+      // your existing cart loading logic
+    } catch (error) {
+      console.error('Failed to load cart:', error);
+    } finally {
+      setCartLoading(false);
+    }
+  };
+
+  loadCart();
+}, []);
+
+  useEffect(() => {
+  if (!user || !token) return;
+
+  // Already synced this user
+  if (prevUserId.current === user.id) return;
+
+  prevUserId.current = user.id;
+  isInitialSyncing.current = true;
+  setCartLoading(true);
+
+  const syncGuestCart = async () => {
+    const guestCart = getGuestCart();
+
+    try {
+      const res = await api.get('/api/profile/cart', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const serverCart: CartItem[] = Array.isArray(res.data)
+        ? res.data
+        : [];
+
+      // Keep both carts
+      const mergedCart = [
+        ...serverCart,
+        ...guestCart,
+      ];
+
+      // Update UI
+      setCart(mergedCart);
+
+      // Save merged cart to account
+      await api.post(
+        '/api/profile/cart',
+        { items: mergedCart },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      // Guest cart has successfully moved to account
+      clearGuestCart();
+
+    } catch (error) {
+      console.error('Cart login sync failed:', error);
+
+      // Never lose guest cart if API fails
+      if (guestCart.length > 0) {
+        setCart(guestCart);
+      }
+    } finally {
+      isInitialSyncing.current = false;
+      setCartLoading(false);
+    }
+  };
+
+  syncGuestCart();
+}, [user, token]);
 
   // Persist guest cart to localStorage
   useEffect(() => {
-    if (!user) {
-      try { localStorage.setItem('guest_cart', JSON.stringify(cart)); } catch {}
-    }
-  }, [cart, user]);
+  if (!user && !isInitialSyncing.current) {
+    saveGuestCart(cart);
+  }
+}, [cart, user]);
 
   // Load cart from server when user logs in
-  useEffect(() => {
-    if (user && token && user.id !== prevUserId.current) {
-      prevUserId.current = user.id;
-      setCartLoading(true);
-      // Merge guest cart with server cart on login
-      const guestCart: CartItem[] = (() => { try { const s = localStorage.getItem('guest_cart'); return s ? JSON.parse(s) : []; } catch { return []; } })();
-      api.get('/api/profile/cart', { headers: { Authorization: `Bearer ${token}` } })
-        .then(res => {
-          const serverCart = Array.isArray(res.data) ? res.data : [];
-          const merged = serverCart.length > 0 ? [...serverCart, ...guestCart] : guestCart;
-          if (merged.length > 0) setCart(merged);
-        })
-        .catch(() => {
-          if (guestCart.length > 0) setCart(guestCart);
-        })
-        .finally(() => {
-          setCartLoading(false);
-          localStorage.removeItem('guest_cart');
-        });
-    }
-
-    // Clear cart on logout
-    if (!user && prevUserId.current !== null) {
-      prevUserId.current = null;
-      setCart([]);
-      localStorage.removeItem('guest_cart');
-      clearAllImages().catch(() => {});
-    }
-  }, [user, token]);
+ 
 
   // Sync cart to server (debounced)
-  const syncToServer = useCallback((items: CartItem[]) => {
-    if (!token) return;
-    if (syncTimeout.current) clearTimeout(syncTimeout.current);
-    syncTimeout.current = setTimeout(() => {
-      api.post('/api/profile/cart', { items }, { headers: { Authorization: `Bearer ${token}` } }).catch(() => {});
-    }, 1000);
-  }, [token]);
+ const syncToServer = useCallback((items: CartItem[]) => {
+  if (!token || isInitialSyncing.current) return;
+
+  if (syncTimeout.current) {
+    clearTimeout(syncTimeout.current);
+  }
+
+  syncTimeout.current = setTimeout(() => {
+    api.post(
+      '/api/profile/cart',
+      { items },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    ).catch((err) => {
+      console.error('Cart sync failed:', err);
+    });
+  }, 1000);
+}, [token]);
 
   // Save to server whenever cart changes (only if logged in)
   useEffect(() => {
@@ -158,7 +246,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   return (
-    <CartContext.Provider value={{ cart, addToCart, removeFromCart, updateQuantity, clearCart, total, cartLoading }}>
+    <CartContext.Provider value={{ cart,cartLoading, addToCart, removeFromCart, updateQuantity, clearCart, total, cartLoading }}>
       {children}
     </CartContext.Provider>
   );

@@ -22,7 +22,7 @@ export default function Admin() {
     <div className="min-h-screen bg-z-paper flex items-center justify-center p-6">
       <div className="max-w-md w-full p-12 bg-z-paper border-4 border-z-border shadow-[12px_12px_0px_0px_var(--color-z-shadow)] text-center">
         <ShieldAlert className="w-16 h-16 text-red-500 mx-auto mb-8" />
-        <h1 className="font-display font-black text-4xl uppercase tracking-tighter italic mb-6 text-z-ink">ACCESS_<span className="text-red-600">DENIED</span></h1>
+        <h1 className="font-display font-black text-4xl uppercase tracking-tighter   mb-6 text-z-ink">ACCESS_<span className="text-red-600">DENIED</span></h1>
         <Link to="/" className="sticker-btn bg-z-ink text-z-paper w-full mt-10 block text-center">GO HOME</Link>
       </div>
     </div>
@@ -44,7 +44,7 @@ export default function Admin() {
       <div className="max-w-7xl mx-auto px-6 pt-40 pb-32">
         <header className="mb-8">
           <p className="text-[10px] font-mono uppercase tracking-[0.4em] text-z-orange font-black mb-2">ADMIN PANEL</p>
-          <h1 className="font-display font-black text-4xl md:text-6xl uppercase tracking-tighter leading-none italic text-z-ink">
+          <h1 className="font-display font-black text-4xl md:text-6xl uppercase tracking-tighter leading-none   text-z-ink">
             Control_<span className="text-z-orange">Center</span>
           </h1>
         </header>

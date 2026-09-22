@@ -4,6 +4,8 @@ import api from '../lib/api';
 import { Package, Heart, ChevronRight, ArrowRight, MapPin, User, X, Plus, Star, AlertTriangle, XCircle } from 'lucide-react';
 import { motion } from 'motion/react';
 import { Link } from 'react-router-dom';
+import { useWishlist } from '../context/WishlistContext';
+import ProductCard from '../components/ProductCard';
 
 interface Address {
   id: number;
@@ -18,8 +20,11 @@ interface Address {
 
 export default function Dashboard() {
   const { user, token, refreshUser } = useAuth();
+  const { favourites, toggleFavourite } = useWishlist();
   const [orders, setOrders] = useState<any[]>([]);
   const [designs, setDesigns] = useState([]);
+  const [wishlistProducts, setWishlistProducts] = useState<any[]>([]);
+  const [wishlistLoading, setWishlistLoading] = useState(false);
   const [loading, setLoading] = useState(true);
   const [expandedOrderId, setExpandedOrderId] = useState<number | null>(null);
   const [cancelModal, setCancelModal] = useState<number | null>(null);
@@ -60,6 +65,37 @@ export default function Dashboard() {
     };
     fetchData();
   }, [user, token]);
+
+  useEffect(() => {
+  const fetchWishlistProducts = async () => {
+    if (favourites.length === 0) {
+      setWishlistProducts([]);
+      return;
+    }
+
+    try {
+      setWishlistLoading(true);
+
+      const response = await api.get('/api/products');
+
+      const products = Array.isArray(response.data)
+        ? response.data
+        : response.data.products || [];
+
+      const favouriteProducts = products.filter((product: any) =>
+        favourites.includes(Number(product.id))
+      );
+
+      setWishlistProducts(favouriteProducts);
+    } catch (error) {
+      console.error('Failed to fetch wishlist products:', error);
+    } finally {
+      setWishlistLoading(false);
+    }
+  };
+
+  fetchWishlistProducts();
+}, [favourites]);
 
   useEffect(() => {
     if (user) {
@@ -146,8 +182,8 @@ export default function Dashboard() {
         <header className="mb-20 flex flex-col md:flex-row justify-between items-end gap-10 border-b-4 border-z-border pb-12">
           <div>
             <p className="section-label mb-4">THE_ARCHIVE_DASHBOARD</p>
-            <h1 className="font-display font-black text-6xl sm:text-7xl uppercase tracking-tighter italic leading-none text-z-ink">
-              HELLO, <span className="text-outline">{user?.name || user?.email.split('@')[0]}</span>
+            <h1 className="font-display font-black text-6xl sm:text-7xl uppercase tracking-tighter   leading-none text-z-ink">
+              HELLO, {user?.name || user?.email.split('@')[0]}
             </h1>
           </div>
           <div className="flex gap-4">
@@ -265,13 +301,59 @@ export default function Dashboard() {
                     </div>
                   ) : !showAddressForm ? (
                     <div className="text-center py-12 border-2 border-dashed border-z-border">
-                      <p className="font-display font-black text-xl uppercase tracking-tighter text-z-muted italic">NO_ADDRESS_SAVED</p>
+                      <p className="font-display font-black text-xl uppercase tracking-tighter text-z-muted  ">NO_ADDRESS_SAVED</p>
                       <p className="text-[10px] font-mono text-z-muted uppercase mt-2">Add an address to enable checkout</p>
                     </div>
                   ) : null}
                 </div>
               </motion.section>
             )}
+            {/* Wishlist */}
+{/* Wishlist */}
+<section>
+  <div className="flex items-center justify-between mb-10 pb-4 border-b-2 border-z-border">
+    <div className="flex items-center space-x-4">
+      <Heart className="w-5 h-5 text-z-ink" />
+      <h2 className="section-label">WISHLIST_</h2>
+    </div>
+
+    <span className="text-[9px] font-mono font-bold uppercase tracking-widest text-z-muted">
+      {wishlistProducts.length} SAVED
+    </span>
+  </div>
+
+  {wishlistLoading ? (
+    <div className="border-2 border-dashed border-z-border p-12 text-center">
+      <p className="font-mono text-[10px] font-bold uppercase tracking-widest text-z-muted">
+        LOADING_COLLECTION...
+      </p>
+    </div>
+  ) : wishlistProducts.length > 0 ? (
+    <div className="grid grid-cols-5 sm:grid-cols-5 gap-6">
+      {wishlistProducts.map((product: any) => (
+        <ProductCard
+          key={product.id}
+          {...product}
+        />
+      ))}
+    </div>
+  ) : (
+    <div className="bg-z-paper border-2 border-dashed border-z-border p-12 text-center">
+      <Heart className="w-8 h-8 mx-auto mb-5 text-z-muted" />
+
+      <p className="font-display font-black text-xl uppercase tracking-tighter text-z-muted   mb-6">
+        WISHLIST_IS_EMPTY
+      </p>
+
+      <Link
+        to="/collection"
+        className="sticker-btn bg-z-ink text-white inline-block"
+      >
+        EXPLORE_THE_DIRECTORY_
+      </Link>
+    </div>
+  )}
+</section>
 
 
             {/* Orders */}
@@ -307,7 +389,7 @@ export default function Dashboard() {
                         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center">
                           <div className="mb-6 sm:mb-0">
                             <p className="text-[10px] font-mono uppercase tracking-widest text-z-muted mb-3 font-bold underline decoration-2 decoration-z-border">REF_ID: STUDIO-{order.id}</p>
-                            <p className="font-display font-black text-4xl text-z-ink tracking-tighter uppercase leading-none italic"><span className="text-outline">&#8377;</span>{order.total.toLocaleString()}</p>
+                            <p className="font-display font-black text-4xl text-z-ink tracking-tighter uppercase leading-none  "><span className="text-outline">&#8377;</span>{order.total.toLocaleString()}</p>
                             <p className="text-[9px] font-mono font-bold uppercase text-z-muted mt-4 tracking-widest">RECORDED: {new Date(order.created_at).toLocaleDateString()}</p>
                           </div>
                           <div className="flex items-center space-x-8 w-full sm:w-auto justify-between sm:justify-end">
@@ -441,7 +523,7 @@ export default function Dashboard() {
                                    <p className="font-mono font-black text-sm text-z-ink">&#8377;{item.price.toLocaleString()}</p>
                                 </div>
                               )) : (
-                                <p className="font-mono text-[10px] uppercase tracking-widest text-z-muted italic">NO_ITEM_DATA_LOGGED_FOR_THIS_TRANSACTION_</p>
+                                <p className="font-mono text-[10px] uppercase tracking-widest text-z-muted  ">NO_ITEM_DATA_LOGGED_FOR_THIS_TRANSACTION_</p>
                               )}
                             </div>
                           </motion.div>
@@ -452,7 +534,7 @@ export default function Dashboard() {
                 </div>
               ) : (
                 <div className="bg-z-paper border-2 border-dashed border-z-border p-20 text-center">
-                  <p className="font-display font-black text-2xl uppercase tracking-tighter text-z-muted italic mb-8 underline underline-offset-8">ARCHIVE_IS_EMPTY</p>
+                  <p className="font-display font-black text-2xl uppercase tracking-tighter text-z-muted   mb-8 underline underline-offset-8">ARCHIVE_IS_EMPTY</p>
                   <Link to="/collection" className="sticker-btn bg-z-ink text-white inline-block">EXPLORE_THE_DIRECTORY_</Link>
                 </div>
               )}
@@ -481,19 +563,20 @@ export default function Dashboard() {
                 </div>
               ) : (
                 <div className="bg-z-paper border-2 border-dashed border-z-border p-12 text-center">
-                  <p className="font-display font-black text-xl uppercase tracking-tighter text-z-muted italic leading-none border-b-2 border-z-border inline-block pb-1">NO_SKETCHES_LOGGED</p>
+                  <p className="font-display font-black text-xl uppercase tracking-tighter text-z-muted   leading-none border-b-2 border-z-border inline-block pb-1">NO_SKETCHES_LOGGED</p>
                 </div>
               )}
             </section>
           </div>
+          
 
           {/* Sidebar */}
           <aside className="lg:col-span-4 space-y-12">
             <div className="bg-z-paper p-10 border-2 border-z-border shadow-[12px_12px_0px_0px_var(--color-z-shadow)] sticky top-40 overflow-hidden">
-              <h3 className="text-[12px] font-display font-black uppercase tracking-widest text-z-ink mb-12 border-b-2 border-z-border pb-2 inline-block italic">IDENTITY_FILE</h3>
+              <h3 className="text-[12px] font-display font-black uppercase tracking-widest text-z-ink mb-12 border-b-2 border-z-border pb-2 inline-block  ">IDENTITY_FILE</h3>
               <div className="space-y-10">
                 <div className="flex items-center space-x-6 pb-10 border-b-2 border-dashed border-z-border">
-                   <div className="w-16 h-16 bg-z-ink border-2 border-z-border shadow-[4px_4px_0px_0px_var(--color-z-shadow)] flex items-center justify-center text-z-paper text-2xl font-display font-black italic">
+                   <div className="w-16 h-16 bg-z-ink border-2 border-z-border shadow-[4px_4px_0px_0px_var(--color-z-shadow)] flex items-center justify-center text-z-paper text-2xl font-display font-black  ">
                       {(user?.name || user?.email)?.[0]?.toUpperCase()}
                    </div>
                    <div>
@@ -512,7 +595,7 @@ export default function Dashboard() {
 
             <div className="bg-z-ink p-10 border-2 border-z-border text-z-paper relative shadow-[12px_12px_0px_0px_var(--color-z-shadow)]">
                <div className="relative z-10">
-                 <h3 className="font-display font-black text-4xl uppercase tracking-tighter italic mb-8 leading-none">JOIN_THE<br/><span className="text-outline">COLLECTIVE</span></h3>
+                 <h3 className="font-display font-black text-4xl uppercase tracking-tighter   mb-8 leading-none">JOIN_THE<br/><span className="text-outline">COLLECTIVE</span></h3>
                  <p className="text-[10px] font-mono font-bold text-z-paper/60 mb-10 leading-relaxed uppercase tracking-widest">Share the vision. Your referral provides 20% off and adds credits to your archive.</p>
                  <button className="sticker-btn bg-z-paper text-z-ink w-full font-black">GENERATE_INVITE_</button>
                </div>

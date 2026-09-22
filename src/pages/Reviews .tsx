@@ -135,14 +135,14 @@ function Pin({ review, tilt }: PinProps) {
 
         <span
           aria-hidden="true"
-          className="pointer-events-none select-none absolute -bottom-6 -left-1 font-display italic text-z-paper text-[90px] sm:text-[120px] leading-none mix-blend-difference"
+          className="pointer-events-none select-none absolute -bottom-6 -left-1 font-display   text-z-paper text-[90px] sm:text-[120px] leading-none mix-blend-difference"
         >
           &ldquo;
         </span>
       </div>
 
       <div className="p-6 sm:p-7 pt-9">
-        <p className="font-display italic font-bold text-xl sm:text-2xl leading-[1.15] tracking-tight text-z-paper mb-5">
+        <p className="font-display   font-bold text-xl sm:text-2xl leading-[1.15] tracking-tight text-z-paper mb-5">
           {review.quote}
         </p>
 
@@ -216,8 +216,8 @@ const Reviews = () => {
           <span className="help-reveal text-[14px] font-display uppercase tracking-[0.5em] text-z-paper/60 font-black mb-10 block underline decoration-4 underline-offset-8">
             Reviews
           </span>
-          <TextReveal className="help-reveal help-title font-display font-bold text-6xl md:text-9xl tracking-tighter uppercase leading-[0.85] italic text-z-paper">
-            Loved by the People Who Hang Them.
+          <TextReveal className="help-reveal help-title font-display font-bold text-6xl md:text-9xl tracking-tighter uppercase leading-[0.85]   text-z-paper">
+            Loved by the People Who Have Them.
           </TextReveal>
         </header>
 

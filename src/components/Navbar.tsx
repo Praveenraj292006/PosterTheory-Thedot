@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Link , useNavigate} from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Search, ShoppingBag, User, Menu, X, ChevronDown, LogOut, LayoutDashboard, UserCircle } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import Logo from "./Logo";
+import GlitchText from "./GlitchText";
 import api from "../lib/api";
 
 /* =========================================================
@@ -83,46 +84,41 @@ export default function Navbar({ cartCount = 0 }: NavbarProps) {
      Swap these paths for your actual auth routes if different.
   ========================================================= */
   useEffect(() => {
-  console.log("Navbar: checking authentication...");
+    console.log("Navbar: checking authentication...");
 
-  api
-    .get("/api/auth/me")
-    .then((res) => {
-      console.log("Navbar /auth/me response:", res.data);
+    api
+      .get("/api/auth/me")
+      .then((res) => {
+        console.log("Navbar /auth/me response:", res.data);
 
-      const authUser = res.data?.user || res.data || null;
-      setUser(authUser);
-    })
-    .catch((err) => {
-      console.error(
-        "Navbar /auth/me error:",
-        err.response?.data || err.message
-      );
+        const authUser = res.data?.user || res.data || null;
+        setUser(authUser);
+      })
+      .catch((err) => {
+        console.error("Navbar /auth/me error:", err.response?.data || err.message);
 
-      setUser(null);
-    })
-    .finally(() => {
-      console.log("Navbar: auth check completed");
-      setAuthChecked(true);
-    });
-}, []);
+        setUser(null);
+      })
+      .finally(() => {
+        console.log("Navbar: auth check completed");
+        setAuthChecked(true);
+      });
+  }, []);
 
-const handleLogout = () => {
-  const confirmed = window.confirm(
-    "Are you sure you want to logout?"
-  );
+  const handleLogout = () => {
+    const confirmed = window.confirm("Are you sure you want to logout?");
 
-  if (!confirmed) return;
+    if (!confirmed) return;
 
-  localStorage.removeItem("token");
+    localStorage.removeItem("token");
 
-  setUser(null);
-  setUserMenuOpen(false);
-  setMobileOpen(false);
+    setUser(null);
+    setUserMenuOpen(false);
+    setMobileOpen(false);
 
-  // Go back to the previous page
-  navigate(-1);
-};
+    // Go back to the previous page
+    navigate(-1);
+  };
 
   /* =========================================================
      SCROLL STATE
@@ -172,11 +168,9 @@ const handleLogout = () => {
 
   return (
     <>
-   
       <header className={`fixed border-dashed border-b border-white top-0 left-0 right-0 z-[100] transition-all duration-300 ${scrolled ? "bg-black/95 backdrop-blur-xl border-b-0" : "bg-black "}`}>
         <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 ">
           <div className="h-[80px] flex items-center justify-between relative">
-
             {/* LEFT — LOGO */}
             <div className="flex items-center shrink-0">
               <Link to="/" className="block hover:opacity-80 transition-opacity">
@@ -186,7 +180,6 @@ const handleLogout = () => {
 
             {/* CENTER — DESKTOP MENU */}
             <nav className="hidden xl:flex items-center justify-center gap-5 2xl:gap-7 absolute left-1/2 -translate-x-1/2">
-
               {/* COLLECTIONS DROPDOWN */}
               <div ref={collectionsRef} className="relative" onMouseEnter={() => setHoveredNav("collections")} onMouseLeave={() => setHoveredNav(null)}>
                 <button onClick={() => setCollectionsOpen((v) => !v)} className="relative flex items-center gap-1 py-2 text-[10px] 2xl:text-[11px] font-mono font-bold uppercase tracking-widest text-white/70 hover:text-white transition-colors whitespace-nowrap">
@@ -198,6 +191,10 @@ const handleLogout = () => {
                 <AnimatePresence>
                   {collectionsOpen && (
                     <motion.div {...dropdownMotion} className="absolute top-full left-1/2 -translate-x-1/2 mt-5 w-52 bg-black border-2 border-white/15 shadow-[6px_6px_0px_0px_rgba(255,255,255,0.1)] p-2">
+                      <Link to={"/collection"} onClick={() => setCollectionsOpen(false)} className={dropdownRow}>
+                        <span className="group-hover/item:translate-x-1 transition-transform">All Collections</span>
+                        <span className="opacity-0 -translate-x-1 group-hover/item:opacity-100 group-hover/item:translate-x-0 transition-all">→</span>
+                      </Link>
                       {collections.filter((c) => c.is_active !== false).map((collection, i) => (
                         <motion.div key={collection.name} initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.03, duration: 0.15 }}>
                           <Link to={collection.path} onClick={() => setCollectionsOpen(false)} className={dropdownRow}>
@@ -211,11 +208,16 @@ const handleLogout = () => {
                 </AnimatePresence>
               </div>
 
-              {/* MAIN LINKS — shared sliding underline on hover */}
+              {/* MAIN LINKS — shared sliding underline on hover. "Customize" gets the
+                  neon glitch treatment so it stands out against the black & white site. */}
               {menuItems.map((item) => (
                 <div key={item.name} className="relative" onMouseEnter={() => setHoveredNav(item.name)} onMouseLeave={() => setHoveredNav(null)}>
                   <Link to={item.path} className="relative block py-2 text-[10px] 2xl:text-[11px] font-mono font-bold uppercase tracking-widest text-white/70 hover:text-white transition-colors whitespace-nowrap">
-                    {item.name}
+                    {item.name === "Customize" ? (
+                      <GlitchText text={item.name} as="span" ambient />
+                    ) : (
+                      item.name
+                    )}
                     {hoveredNav === item.name && <motion.span layoutId="nav-hover-underline" className="absolute left-0 right-0 -bottom-1 h-[2px] bg-white" transition={{ type: "spring", stiffness: 380, damping: 32 }} />}
                   </Link>
                 </div>
@@ -224,7 +226,6 @@ const handleLogout = () => {
 
             {/* RIGHT — ACTIONS */}
             <div className="flex items-center gap-2 sm:gap-3 ml-auto shrink-0">
-
               {/* SEARCH */}
               <motion.div layout className="flex items-center">
                 <AnimatePresence mode="wait">
@@ -267,16 +268,22 @@ const handleLogout = () => {
 
                           {isAdmin && (
                             <Link to="/admin" onClick={() => setUserMenuOpen(false)} className={dropdownRow}>
-                              <span className="flex items-center gap-2 group-hover/item:translate-x-1 transition-transform"><LayoutDashboard className="w-3.5 h-3.5" />Admin Panel</span>
+                              <span className="flex items-center gap-2 group-hover/item:translate-x-1 transition-transform">
+                                <LayoutDashboard className="w-3.5 h-3.5" />Admin Panel
+                              </span>
                             </Link>
                           )}
 
                           <Link to="/dashboard" onClick={() => setUserMenuOpen(false)} className={dropdownRow}>
-                            <span className="flex items-center gap-2 group-hover/item:translate-x-1 transition-transform"><UserCircle className="w-3.5 h-3.5" />Profile</span>
+                            <span className="flex items-center gap-2 group-hover/item:translate-x-1 transition-transform">
+                              <UserCircle className="w-3.5 h-3.5" />Profile
+                            </span>
                           </Link>
 
                           <button onClick={handleLogout} className={`w-full ${dropdownRow}`}>
-                            <span className="flex items-center gap-2 group-hover/item:translate-x-1 transition-transform"><LogOut className="w-3.5 h-3.5" />Logout</span>
+                            <span className="flex items-center gap-2 group-hover/item:translate-x-1 transition-transform">
+                              <LogOut className="w-3.5 h-3.5" />Logout
+                            </span>
                           </button>
                         </>
                       ) : (
@@ -309,7 +316,6 @@ const handleLogout = () => {
           {mobileOpen && (
             <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.25 }} className="xl:hidden overflow-hidden border-t border-white/10 bg-black">
               <nav className="px-5 py-5 space-y-1">
-
                 {/* MOBILE COLLECTIONS */}
                 <button onClick={() => setCollectionsOpen(!collectionsOpen)} className="w-full flex items-center justify-between py-3 text-left text-[11px] font-mono font-bold uppercase tracking-widest text-white/70 hover:text-white">
                   <span>Collections</span>
@@ -330,7 +336,7 @@ const handleLogout = () => {
 
                 {menuItems.map((item) => (
                   <Link key={item.name} to={item.path} onClick={() => setMobileOpen(false)} className="block py-3 text-[11px] font-mono font-bold uppercase tracking-widest text-white/70 hover:text-white border-b border-white/5">
-                    {item.name}
+                    {item.name === "Customize" ? <GlitchText text={item.name} as="span" ambient /> : item.name}
                   </Link>
                 ))}
 
@@ -354,7 +360,6 @@ const handleLogout = () => {
           )}
         </AnimatePresence>
       </header>
-    
     </>
   );
 }

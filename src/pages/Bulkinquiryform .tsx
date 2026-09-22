@@ -11,8 +11,7 @@ gsap.registerPlugin(ScrollTrigger);
    Config — replace with the real business WhatsApp number.
    Format: country code + number, digits only, no + or spaces.
 --------------------------------------------------------------------- */
-const WHATSAPP_NUMBER = '918610254207';
-
+const WHATSAPP_NUMBER = import.meta.env.VITE_WHATSAPP_NUMBER;
 
 
 const BUYER_TYPES = [
@@ -306,7 +305,7 @@ Heard via: ${form.heard || '-'}`;
         </Link>
 
         <header ref={heroRef} className="mb-16 border-b-4 border-z-border pb-12">
-          <h1 className="bulk-form-reveal bulk-form-title font-display font-bold text-4xl md:text-6xl tracking-tighter uppercase leading-[0.95] italic">
+          <h1 className="bulk-form-reveal bulk-form-title font-display font-bold text-4xl md:text-6xl tracking-tighter uppercase leading-[0.95]  ">
             Bulk_inquiry_form
           </h1>
           <div className="bulk-form-line h-1 bg-z-ink mt-6 max-w-[220px]" />
