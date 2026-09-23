@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+
 import { Link, useNavigate } from "react-router-dom";
 import { Search, ShoppingBag, User, Menu, X, ChevronDown, LogOut, LayoutDashboard, UserCircle } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
@@ -44,6 +45,7 @@ export default function Navbar({ cartCount = 0 }: NavbarProps) {
   const [collections, setCollections] = useState<Collection[]>(TEMP_COLLECTIONS);
   const [searchOpen, setSearchOpen] = useState(false);
   const [hoveredNav, setHoveredNav] = useState<string | null>(null);
+  const [aboutOpen, setAboutOpen] = useState(false);
 
   // auth state — `authChecked` avoids flashing "guest" UI before the request resolves
   const [user, setUser] = useState<AuthUser | null>(null);
@@ -53,6 +55,7 @@ export default function Navbar({ cartCount = 0 }: NavbarProps) {
   const searchRef = useRef<HTMLInputElement>(null);
   const collectionsRef = useRef<HTMLDivElement>(null);
   const userRef = useRef<HTMLDivElement>(null);
+  const aboutRef = useRef<HTMLDivElement>(null);
 
   const navigate = useNavigate();
   /* =========================================================
@@ -140,6 +143,7 @@ export default function Navbar({ cartCount = 0 }: NavbarProps) {
     const handleClickOutside = (e: MouseEvent) => {
       if (collectionsRef.current && !collectionsRef.current.contains(e.target as Node)) setCollectionsOpen(false);
       if (userRef.current && !userRef.current.contains(e.target as Node)) setUserMenuOpen(false);
+       if (aboutRef.current && !aboutRef.current.contains(e.target as Node)) setAboutOpen(false);
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
@@ -152,7 +156,6 @@ export default function Navbar({ cartCount = 0 }: NavbarProps) {
     { name: "Customize", path: "/customize" },
     { name: "Buy in Bulk", path: "/bulk-inquiry" },
     { name: "Reviews", path: "/reviews" },
-    { name: "Help Center", path: "/help" },
   ];
 
   // shared dropdown entrance — brutalist: quick, hard snap rather than a soft ease
@@ -208,6 +211,8 @@ export default function Navbar({ cartCount = 0 }: NavbarProps) {
                 </AnimatePresence>
               </div>
 
+              
+
               {/* MAIN LINKS — shared sliding underline on hover. "Customize" gets the
                   neon glitch treatment so it stands out against the black & white site. */}
               {menuItems.map((item) => (
@@ -222,6 +227,39 @@ export default function Navbar({ cartCount = 0 }: NavbarProps) {
                   </Link>
                 </div>
               ))}
+
+              <div ref={aboutRef} className="relative">
+              <button onClick={() => setAboutOpen(v => !v)} className="relative flex items-center gap-1 py-2 text-[10px] 2xl:text-[11px] font-mono font-bold uppercase tracking-widest text-white/70 hover:text-white transition-colors">
+                HELP CENTER
+                <ChevronDown className={`w-3 h-3 transition-transform duration-200 ${aboutOpen ? "rotate-180" : ""}`} />
+              </button>
+
+          <AnimatePresence>
+            {aboutOpen && (
+              <motion.div {...dropdownMotion} className="absolute top-full left-1/2 -translate-x-1/2 mt-5 w-64 bg-black border-2 border-white/15 shadow-[6px_6px_0px_0px_rgba(255,255,255,0.1)] p-2">
+                <Link to="/help#about" onClick={() => setAboutOpen(false)} className={dropdownRow}>
+                  <span>About Poster Theory</span>
+                 
+                </Link>
+
+                <div className="my-1 border-t border-white/10" />
+
+                {[
+                  ["Terms & Conditions", "/help#terms"],
+                  ["Privacy Policy", "/help#privacy"],
+                  ["Shipping Policy", "/help#shipping-policy"],
+                  ["Return & Refund Policy", "/help#return-policy"],
+                  ["Cancellation Policy", "/help#cancellation"],
+                ].map(([name, path]) => (
+                  <Link key={name} to={path} onClick={() => setAboutOpen(false)} className={dropdownRow}>
+                    <span>{name}</span>
+                    
+                  </Link>
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
             </nav>
 
             {/* RIGHT — ACTIONS */}

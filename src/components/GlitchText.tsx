@@ -1,25 +1,27 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
+import gsap from "gsap";
 
 /* =========================================================
-   GLITCH TEXT
-   A Spider-Verse / Spider-Verse-glitch-inspired neon RGB-split
-   effect — the rest of the site is strict black & white, so
-   this is the one place color (electric cyan + hot magenta)
-   is allowed to break the rules and grab attention.
+   GLITCH TEXT — GSAP EDITION
+   Same Spider-Verse-style neon RGB-split as before, but every
+   frame of the glitch is now a GSAP tween instead of a CSS
+   @keyframes rule, so it's built the same way as the rest of
+   this site's motion (GSAP timelines + randomized values).
 
-   Three stacked copies of the same text:
-     1. base   — normal white/theme text, always visible
-     2. layer A (cyan)    — sliced + offset via clip-path
-     3. layer B (magenta) — sliced + offset the other way
-   mix-blend-mode: screen makes the color copies glow on the
-   dark background instead of just sitting on top of it.
+   Structure: three stacked copies of the text —
+     1. base   — normal theme-colored text, always visible
+     2. layer A (cyan)    — clip-path sliced + offset
+     3. layer B (magenta) — clip-path sliced + offset the other way
+   mix-blend-mode: screen makes the color copies glow instead
+   of just sitting flat on top of the dark background.
 
    Triggers:
-     - hover        → runs continuously while hovered (CSS-only)
-     - ambient       → a faint automatic flicker every ~6s, so it
-                        stands out even before anyone interacts
-     - burst (prop)  → plays a short forced glitch burst once,
-                        e.g. when the element scrolls into view
+     - hover  → a GSAP timeline loops (repeat: -1) for as long
+                as the pointer is over it, then eases back to rest
+     - ambient → a faint automatic flicker every ~6s (GSAP
+                 timeline with repeatDelay), even without interaction
+     - burst (prop) → plays the glitch a few times once, e.g.
+                       when driven by a ScrollTrigger onEnter
 ========================================================= */
 
 interface GlitchTextProps {
@@ -32,129 +34,8 @@ interface GlitchTextProps {
   colorB?: string;
   /** faint automatic flicker every few seconds, even without hover */
   ambient?: boolean;
-  /** plays a short forced glitch burst while true (e.g. driven by a scroll trigger) */
+  /** plays a short forced glitch burst once, e.g. driven by a scroll trigger */
   burst?: boolean;
-}
-
-const STYLE_ID = "glitch-text-styles";
-
-function ensureStyles() {
-  if (typeof document === "undefined") return;
-  if (document.getElementById(STYLE_ID)) return;
-
-  const style = document.createElement("style");
-  style.id = STYLE_ID;
-  style.innerHTML = `
-    .glitch-wrap {
-      position: relative;
-      display: inline-block;
-      isolation: isolate;
-      cursor: pointer;
-    }
-    .glitch-base {
-      position: relative;
-      z-index: 2;
-      display: inline-block;
-      transform: translate(0, 0);
-    }
-    .glitch-layer {
-      position: absolute;
-      inset: 0;
-      z-index: 1;
-      pointer-events: none;
-      opacity: 0;
-      white-space: nowrap;
-      mix-blend-mode: screen;
-      filter: drop-shadow(0 0 4px currentColor);
-      animation-play-state: paused;
-      animation-timing-function: steps(2, jump-end);
-    }
-    .glitch-layer--a { color: var(--glitch-color-a, #00fff9); }
-    .glitch-layer--b { color: var(--glitch-color-b, #ff00c1); }
-
-    @keyframes glitchSliceA {
-      0%   { opacity: 0.95; clip-path: inset(10% 0 70% 0); transform: translate(-3px, -1px); }
-      20%  { opacity: 0.9;  clip-path: inset(55% 0 10% 0); transform: translate(3px, 1px); }
-      40%  { opacity: 0.9;  clip-path: inset(5% 0 80% 0);  transform: translate(-2px, 2px); }
-      60%  { opacity: 0.9;  clip-path: inset(70% 0 5% 0);  transform: translate(2px, -2px); }
-      80%  { opacity: 0.9;  clip-path: inset(30% 0 40% 0); transform: translate(-3px, 0); }
-      100% { opacity: 0;    clip-path: inset(0 0 100% 0);  transform: translate(0, 0); }
-    }
-    @keyframes glitchSliceB {
-      0%   { opacity: 0.95; clip-path: inset(60% 0 10% 0); transform: translate(3px, 1px); }
-      20%  { opacity: 0.9;  clip-path: inset(5% 0 75% 0);  transform: translate(-3px, -1px); }
-      40%  { opacity: 0.9;  clip-path: inset(75% 0 5% 0);  transform: translate(2px, 2px); }
-      60%  { opacity: 0.9;  clip-path: inset(15% 0 60% 0); transform: translate(-2px, -2px); }
-      80%  { opacity: 0.9;  clip-path: inset(45% 0 25% 0); transform: translate(3px, 0); }
-      100% { opacity: 0;    clip-path: inset(100% 0 0 0);  transform: translate(0, 0); }
-    }
-    @keyframes glitchJitter {
-      0%, 100% { transform: translate(0, 0); }
-      20%  { transform: translate(-1px, 1px); }
-      40%  { transform: translate(1px, -1px) skewX(1deg); }
-      60%  { transform: translate(-1px, -1px); }
-      80%  { transform: translate(1px, 1px) skewX(-1deg); }
-    }
-    @keyframes glitchAmbientA {
-      0%, 44%, 58%, 100% { opacity: 0; clip-path: inset(0 0 100% 0); transform: translate(0, 0); }
-      48% { opacity: 0.85; clip-path: inset(20% 0 55% 0); transform: translate(-3px, 0); }
-      53% { opacity: 0.85; clip-path: inset(55% 0 15% 0); transform: translate(3px, 0); }
-    }
-    @keyframes glitchAmbientB {
-      0%, 44%, 58%, 100% { opacity: 0; clip-path: inset(100% 0 0 0); transform: translate(0, 0); }
-      48% { opacity: 0.85; clip-path: inset(55% 0 20% 0); transform: translate(3px, 0); }
-      53% { opacity: 0.85; clip-path: inset(15% 0 60% 0); transform: translate(-3px, 0); }
-    }
-    @keyframes glitchAmbientJitter {
-      0%, 44%, 58%, 100% { transform: translate(0, 0); }
-      48% { transform: translate(-1px, 0); }
-      53% { transform: translate(1px, 0); }
-    }
-
-    /* ambient — faint, automatic, always-on flicker */
-    .glitch-wrap.glitch-ambient .glitch-layer--a {
-      animation: glitchAmbientA 15s ease-in-out infinite;
-      animation-play-state: running;
-    }
-    .glitch-wrap.glitch-ambient .glitch-layer--b {
-      animation: glitchAmbientB 6s ease-in-out infinite;
-      animation-play-state: running;
-    }
-    .glitch-wrap.glitch-ambient .glitch-base {
-      animation: glitchAmbientJitter 6s ease-in-out infinite;
-    }
-
-    /* hover — the full, punchy loop, only while the pointer is over it */
-    .glitch-wrap:hover .glitch-layer--a {
-      animation: glitchSliceA 0.5s steps(2, jump-end) infinite;
-      animation-play-state: running;
-    }
-    .glitch-wrap:hover .glitch-layer--b {
-      animation: glitchSliceB 0.5s steps(2, jump-end) infinite;
-      animation-play-state: running;
-    }
-    .glitch-wrap:hover .glitch-base {
-      animation: glitchJitter 0.5s steps(2, jump-end) infinite;
-    }
-    .glitch-wrap:hover .glitch-base {
-      text-shadow: 0 0 8px rgba(0, 255, 249, 0.55), 0 0 16px rgba(255, 0, 193, 0.4);
-    }
-
-    /* burst — forced, plays a few times then settles (e.g. on scroll-in) */
-    .glitch-wrap.is-bursting .glitch-layer--a {
-      animation: glitchSliceA 0.8s steps(2, jump-end) 3;
-      animation-play-state: running;
-    }
-    .glitch-wrap.is-bursting .glitch-layer--b {
-      animation: glitchSliceB 0.4s steps(2, jump-end) 3;
-      animation-play-state: running;
-    }
-    .glitch-wrap.is-bursting .glitch-base {
-      animation: glitchJitter 0.4s steps(2, jump-end) 3;
-      text-shadow: 0 0 10px rgba(0, 255, 249, 0.6), 0 0 20px rgba(255, 0, 193, 0.45);
-    }
-  `;
-  document.head.appendChild(style);
 }
 
 const GlitchText: React.FC<GlitchTextProps> = ({
@@ -166,36 +47,179 @@ const GlitchText: React.FC<GlitchTextProps> = ({
   ambient = false,
   burst = false,
 }) => {
+  const wrapRef = useRef<HTMLElement | null>(null);
+  const baseRef = useRef<HTMLSpanElement | null>(null);
+  const layerARef = useRef<HTMLSpanElement | null>(null);
+  const layerBRef = useRef<HTMLSpanElement | null>(null);
+
+  const hoverTl = useRef<gsap.core.Timeline | null>(null);
+  const ambientTl = useRef<gsap.core.Timeline | null>(null);
+
+  /* One reusable "glitch flicker" builder — a handful of quick, randomized
+     RGB-split frames plus a grow-bigger scale on the whole wrap, then a
+     snap back to rest. Hover, ambient and burst all reuse this, just at
+     different intensities/speeds. */
+  const buildGlitchTimeline = (scaleAmt: number, frameCount: number, frameDuration: number) => {
+    const wrap = wrapRef.current;
+    const base = baseRef.current;
+    const a = layerARef.current;
+    const b = layerBRef.current;
+    const tl = gsap.timeline({ paused: true });
+    if (!wrap || !base || !a || !b) return tl;
+
+    gsap.set(wrap, { transformOrigin: "50% 50%" });
+
+    for (let i = 0; i < frameCount; i++) {
+      const t = i * frameDuration;
+      tl.to(wrap, { scale: 1 + (scaleAmt - 1) * gsap.utils.random(0.5, 1), duration: frameDuration, ease: "none" }, t)
+        .to(
+          a,
+          {
+            opacity: gsap.utils.random(0.6, 0.95),
+            x: gsap.utils.random(-6, 6),
+            y: gsap.utils.random(-3, 3),
+            clipPath: `inset(${gsap.utils.random(0, 60)}% 0 ${gsap.utils.random(0, 60)}% 0)`,
+            duration: frameDuration,
+            ease: "none",
+          },
+          t
+        )
+        .to(
+          b,
+          {
+            opacity: gsap.utils.random(0.6, 0.95),
+            x: gsap.utils.random(-6, 6),
+            y: gsap.utils.random(-3, 3),
+            clipPath: `inset(${gsap.utils.random(0, 60)}% 0 ${gsap.utils.random(0, 60)}% 0)`,
+            duration: frameDuration,
+            ease: "none",
+          },
+          t
+        )
+        .to(
+          base,
+          {
+            x: gsap.utils.random(-2, 2),
+            y: gsap.utils.random(-2, 2),
+            skewX: gsap.utils.random(-3, 3),
+            duration: frameDuration,
+            ease: "none",
+          },
+          t
+        );
+    }
+
+    // snap back to a clean rest state
+    tl.to(wrap, { scale: 1, duration: 0.18, ease: "power2.out" })
+      .to(a, { opacity: 0, x: 0, y: 0, clipPath: "inset(0% 0 100% 0)", duration: 0.18, ease: "power2.out" }, "<")
+      .to(b, { opacity: 0, x: 0, y: 0, clipPath: "inset(100% 0 0% 0)", duration: 0.18, ease: "power2.out" }, "<")
+      .to(base, { x: 0, y: 0, skewX: 0, duration: 0.18, ease: "power2.out" }, "<");
+
+    return tl;
+  };
+
+  // ambient — a faint automatic flicker every ~6s
   useEffect(() => {
-    ensureStyles();
+    if (!ambient) return;
+    const inner = buildGlitchTimeline(1.05, 4, 0.08);
+    inner.timeScale(0.7);
+    const master = gsap.timeline({ repeat: -1, repeatDelay: 5.5 });
+    master.add(inner.play(0));
+    ambientTl.current = master;
+    return () => {
+      master.kill();
+      ambientTl.current = null;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ambient]);
+
+  // burst — forced, plays a few times then settles (e.g. on scroll-in)
+  const didBurst = useRef(false);
+  useEffect(() => {
+    if (!burst || didBurst.current) return;
+    didBurst.current = true;
+    if (wrapRef.current) gsap.set(wrapRef.current, { zIndex: 50 });
+    const tl = buildGlitchTimeline(1.22, 5, 0.07);
+    tl.repeat(2);
+    tl.eventCallback("onComplete", () => {
+      if (wrapRef.current) gsap.set(wrapRef.current, { zIndex: "auto" });
+    });
+    tl.play(0);
+    return () => {
+      tl.kill();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [burst]);
+
+  // hover — loops continuously while the pointer is over it
+  const handleEnter = () => {
+    hoverTl.current?.kill();
+    if (wrapRef.current) gsap.set(wrapRef.current, { zIndex: 50 });
+    const tl = buildGlitchTimeline(1.22, 5, 0.07);
+    tl.repeat(-1);
+    hoverTl.current = tl;
+    tl.play(0);
+  };
+
+  const handleLeave = () => {
+    hoverTl.current?.kill();
+    hoverTl.current = null;
+    const wrap = wrapRef.current;
+    const base = baseRef.current;
+    const a = layerARef.current;
+    const b = layerBRef.current;
+    if (wrap) gsap.to(wrap, { scale: 1, zIndex: "auto", duration: 0.22, ease: "power2.out" });
+    if (base) gsap.to(base, { x: 0, y: 0, skewX: 0, duration: 0.22, ease: "power2.out" });
+    if (a) gsap.to(a, { opacity: 0, x: 0, y: 0, clipPath: "inset(0% 0 100% 0)", duration: 0.22, ease: "power2.out" });
+    if (b) gsap.to(b, { opacity: 0, x: 0, y: 0, clipPath: "inset(100% 0 0% 0)", duration: 0.22, ease: "power2.out" });
+  };
+
+  useEffect(() => {
+    return () => {
+      hoverTl.current?.kill();
+      ambientTl.current?.kill();
+    };
   }, []);
 
   const Tag = as as React.ElementType;
 
-  const wrapClass = [
-    "glitch-wrap",
-    ambient ? "glitch-ambient" : "",
-    burst ? "is-bursting" : "",
-    className,
-  ]
-    .filter(Boolean)
-    .join(" ");
-
   return (
     <Tag
-      className={wrapClass}
-      style={
-        {
-          "--glitch-color-a": colorA,
-          "--glitch-color-b": colorB,
-        } as React.CSSProperties
-      }
+      ref={wrapRef as React.Ref<HTMLElement>}
+      onMouseEnter={handleEnter}
+      onMouseLeave={handleLeave}
+      className={`relative inline-block cursor-pointer ${className}`}
+      style={{ isolation: "isolate" }}
     >
-      <span className="glitch-base">{text}</span>
-      <span className="glitch-layer glitch-layer--a" aria-hidden="true">
+      <span ref={baseRef} className="relative z-[2] inline-block">
         {text}
       </span>
-      <span className="glitch-layer glitch-layer--b" aria-hidden="true">
+      <span
+        ref={layerARef}
+        aria-hidden="true"
+        className="absolute inset-0 z-[1] whitespace-nowrap pointer-events-none"
+        style={{
+          color: colorA,
+          mixBlendMode: "screen",
+          filter: "drop-shadow(0 0 4px currentColor)",
+          opacity: 0,
+          clipPath: "inset(0% 0 100% 0)",
+        }}
+      >
+        {text}
+      </span>
+      <span
+        ref={layerBRef}
+        aria-hidden="true"
+        className="absolute inset-0 z-[1] whitespace-nowrap pointer-events-none"
+        style={{
+          color: colorB,
+          mixBlendMode: "screen",
+          filter: "drop-shadow(0 0 4px currentColor)",
+          opacity: 0,
+          clipPath: "inset(100% 0 0% 0)",
+        }}
+      >
         {text}
       </span>
     </Tag>

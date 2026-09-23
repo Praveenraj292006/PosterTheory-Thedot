@@ -4,7 +4,8 @@ import { ArrowUpRight } from "lucide-react";
 import { motion } from "motion/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import TextReveal from "./Textreveal";
+import GlitchText from "./GlitchText";
+import GlitchOverlay from "./GlitchOverlay";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -130,6 +131,10 @@ const Customize: React.FC = () => {
   const navigate = useNavigate();
 
   const [isDesktop, setIsDesktop] = useState(false);
+  // fires once when the section scrolls into view: bursts the heading's
+  // glitch, the full-section overlay, and a brief section-wide shake —
+  // then everything settles into its quieter "ambient" flicker state
+  const [sectionGlitch, setSectionGlitch] = useState(false);
 
   useEffect(() => {
     const mq = window.matchMedia("(min-width: 1024px)");
@@ -157,8 +162,11 @@ const Customize: React.FC = () => {
         ScrollTrigger.create({
           trigger: leftColRef.current,
           start: "top 80%",
-          onEnter: () => gsap.to(items, { opacity: 1, y: 0, duration: 0.7, stagger: 0.12, ease: "power3.out" }),
-          onEnterBack: () => gsap.to(items, { opacity: 1, y: 0, duration: 0.7, stagger: 0.12, ease: "power3.out" }),
+          once: true,
+          onEnter: () => {
+            gsap.to(items, { opacity: 1, y: 0, duration: 0.7, stagger: 0.12, ease: "power3.out" });
+            setSectionGlitch(true);
+          },
         });
       }
 
@@ -205,7 +213,15 @@ const Customize: React.FC = () => {
   }, []);
 
   return (
-    <section ref={sectionRef} className="relative m-10 overflow-hidden border-b-2 border-z-border bg-z-ink py-10 text-z-paper sm:py-28">
+    <section
+      ref={sectionRef}
+      className="relative m-10 overflow-hidden border-b-2 border-z-border bg-z-ink py-10 text-z-paper sm:py-28"
+    >
+      {/* whole-section neon glitch — faint scanlines + color bands always
+          on, with a short GSAP camera-shake burst once the section scrolls
+          in. Matches the "Customize" nav link and the heading above. */}
+      <GlitchOverlay ambient burst={sectionGlitch} shakeTargetRef={sectionRef} />
+
       {/* ================================================= AMBIENT MARQUEE ================================================= */}
       <div className="pointer-events-none absolute left-0 right-0 top-6 select-none overflow-hidden">
         <div ref={marqueeRef} className="flex w-max whitespace-nowrap">
@@ -228,13 +244,13 @@ const Customize: React.FC = () => {
             Build Your Own
           </p>
 
-          <TextReveal
+          <GlitchText
             as="h2"
+            text="Customize Your Poster"
+            ambient
+            burst={sectionGlitch}
             className="font-display text-4xl uppercase leading-[1] tracking-tighter text-z-paper sm:text-6xl lg:text-7xl"
-            maskClassName="bg-z-paper"
-          >
-            Customize Your Poster
-          </TextReveal>
+          />
 
           <p className="reveal-item mt-6 max-w-md font-mono text-sm leading-relaxed text-z-paper/60 sm:text-base">
             Pick your size, drop in your design, and we print it exactly your way — from pocket-sized prints to full A3 wall art.

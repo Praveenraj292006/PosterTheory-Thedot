@@ -103,7 +103,9 @@ export default function Login() {
               try {
                 const res = await api.get('/api/auth/google');
                 window.location.href = res.data.url;
-              } catch { setError('Failed to initiate Google sign-in'); }
+              } catch {
+                setError('Failed to initiate Google sign-in');
+              }
             }}
             className="sticker-btn w-full py-5 text-[11px] bg-z-paper text-z-ink flex items-center justify-center gap-3"
           >

@@ -35,9 +35,9 @@ const processSteps = [
 ];
 
 const posterSizes = [
-  { name: "A3", width: "w-24", height: "h-32" },
-  { name: "A4", width: "w-20", height: "h-28" },
-  { name: "A5", width: "w-16", height: "h-22" },
+  { name: "A3", width: "w-30", height: "h-36" },
+  { name: "A4", width: "w-26", height: "h-32" },
+  { name: "A5", width: "w-22", height: "h-26" },
 ];
 
 export default function HowItWorks() {

@@ -1,10 +1,12 @@
 import { ChevronDown, Mail, Phone, Clock } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
-import React, { useState, useEffect, useLayoutEffect, useRef,createPortal } from 'react';
+import React, { useState, useEffect, useLayoutEffect, useRef} from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { AnimatePresence, motion } from "motion/react";
+import { createPortal } from "react-dom";
 import { X } from "lucide-react";
+import About from "../components/About"
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -272,6 +274,9 @@ tl.to(".help-line", {
           <div className="help-line h-1 bg-z-ink mt-8 max-w-[300px]" />
         </header>
 
+        
+
+
         <div className="max-w-[900px] mx-auto space-y-24">
 
           {/* POLICIES — TOP */}
@@ -298,6 +303,46 @@ tl.to(".help-line", {
               ))}
             </div>
           </section>
+
+          <section id="about" className="help-section grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
+  <div className="border-2 border-z-border overflow-hidden shadow-[6px_6px_0px_0px_var(--color-z-shadow)]">
+    <img
+      src="https://placehold.co/900x700/111111/ffffff?text=ABOUT+POSTER+THEORY"
+      alt="About Poster Theory"
+      className="w-full h-full object-cover aspect-[4/3]"
+    />
+  </div>
+
+  <div>
+    <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-z-muted mb-3">
+      ABOUT_POSTER_THEORY
+    </p>
+
+    <h2 className="font-display font-black uppercase tracking-tight text-3xl sm:text-4xl mb-6">
+      WE MAKE WALLS WORTH LOOKING AT.
+    </h2>
+
+    <div className="space-y-4 font-mono text-sm text-z-muted leading-relaxed">
+      <p>
+        Poster Theory is a creative platform focused on turning ideas,
+        artwork, and visual stories into posters worth putting on your wall.
+      </p>
+
+      <p>
+        From curated designs to custom creations, we experiment with
+        different formats, materials, and styles to create something
+        that feels personal.
+      </p>
+
+      <p>
+        This is placeholder content for now. We will replace this section
+        with the final Poster Theory story later.
+      </p>
+    </div>
+  </div>
+</section>
+
+          
 
           {/* FAQ — MIDDLE */}
           <div className="space-y-16">
@@ -379,11 +424,11 @@ function PolicyModal({
     };
   }, [policy]);
 
-  return (
-    <AnimatePresence>
-      {policy && (
-        <motion.div
-          className="fixed inset-0 z-[999999] w-screen h-screen"
+ return createPortal(
+  <AnimatePresence>
+    {policy && (
+      <motion.div
+        className="fixed inset-0 z-[999999] w-screen h-screen flex items-center justify-center p-4 sm:p-6"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -402,38 +447,13 @@ function PolicyModal({
           <div className="absolute inset-0 flex items-center justify-center p-4 sm:p-6">
             
             {/* MODAL */}
-            <motion.div
+           <motion.div
               onClick={(e) => e.stopPropagation()}
-              className="
-                relative
-                w-full
-                max-w-[900px]
-                max-h-[80vh]
-                overflow-hidden
-                border-2
-                border-z-border
-                bg-z-paper
-                shadow-[10px_10px_0px_0px_var(--color-z-shadow)]
-              "
-              initial={{
-                opacity: 0,
-                y: 30,
-                scale: 0.96,
-              }}
-              animate={{
-                opacity: 1,
-                y: 0,
-                scale: 1,
-              }}
-              exit={{
-                opacity: 0,
-                y: 20,
-                scale: 0.96,
-              }}
-              transition={{
-                duration: 0.4,
-                ease: [0.16, 1, 0.3, 1],
-              }}
+              className="relative w-full max-w-[900px] max-h-[80vh] overflow-hidden border-2 border-z-border bg-z-paper shadow-[10px_10px_0px_0px_var(--color-z-shadow)]"
+              initial={{ opacity: 0, y: 30, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 20, scale: 0.96 }}
+              transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
             >
 
               {/* HEADER */}
@@ -484,7 +504,8 @@ function PolicyModal({
           </div>
         </motion.div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 }
 function PolicyContent({ policy }: { policy: string }) {
