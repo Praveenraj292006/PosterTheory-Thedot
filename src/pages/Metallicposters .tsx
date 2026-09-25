@@ -60,6 +60,8 @@ export default function MetallicPosters() {
 
   return (
     <div className="min-h-screen pb-32">
+
+      <MetallicPostersHero></MetallicPostersHero>
       
 
       <div className="max-w-[1440px] mx-auto px-6 pt-20">

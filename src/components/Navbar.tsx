@@ -229,7 +229,7 @@ export default function Navbar({ cartCount = 0 }: NavbarProps) {
               ))}
 
               <div ref={aboutRef} className="relative">
-              <button onClick={() => setAboutOpen(v => !v)} className="relative flex items-center gap-1 py-2 text-[10px] 2xl:text-[11px] font-mono font-bold uppercase tracking-widest text-white/70 hover:text-white transition-colors">
+              <button onClick={() => setAboutOpen(v => !v)} className="relative flex items-center gap-1 py-2 text-[10px] 2xl:text-[11px] whitespace-nowrap font-mono font-bold uppercase tracking-widest text-white/70 hover:text-white transition-colors">
                 HELP CENTER
                 <ChevronDown className={`w-3 h-3 transition-transform duration-200 ${aboutOpen ? "rotate-180" : ""}`} />
               </button>

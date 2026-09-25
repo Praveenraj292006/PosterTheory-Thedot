@@ -98,7 +98,7 @@ export default function SplitPostersHero({
               {/* Left panel */}
               <motion.div
                 variants={leftVariants}
-                className="absolute w-[34%] sm:w-[30%] aspect-[3/4] left-1/3 -translate-x-[92%] sm:-translate-x-[105%] z-10 border-2 border-z-border bg-z-paper "
+                className="absolute w-[40%] sm:w-[34%] aspect-[3/4] left-1/3 -translate-x-[92%] sm:-translate-x-[105%] z-10 border-2 border-z-border bg-z-paper "
               >
                 <img src={resolved.left} alt="Split poster, left panel" className="w-full h-full object-cover" />
               </motion.div>
@@ -106,7 +106,7 @@ export default function SplitPostersHero({
               {/* Right panel */}
               <motion.div
                 variants={rightVariants}
-                className="absolute w-[34%] sm:w-[30%] aspect-[3/4] left-2/3 translate-x-[-8%] sm:translate-x-[5%] z-10 border-2 border-z-border bg-z-paper "
+                className="absolute w-[40%] sm:w-[34%] aspect-[3/4] left-2/3 translate-x-[-8%] sm:translate-x-[5%] z-10 border-2 border-z-border bg-z-paper "
               >
                 <img src={resolved.right} alt="Split poster, right panel" className="w-full h-full object-cover" />
               </motion.div>

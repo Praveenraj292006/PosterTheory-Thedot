@@ -92,7 +92,7 @@ export default function MetallicPostersHero({
   return (
     <section className="relative border-b-4 border-z-border overflow-hidden">
       <div className="max-w-[1440px] mx-auto px-6 pt-28 sm:pt-40 pb-25">
-        <div className="text-center mb-20">
+        <div className="text-center">
           <span className="font-mono font-black uppercase tracking-[0.5em] text-xs text-z-muted block mb-6 underline decoration-4 underline-offset-8">
             {eyebrow}
           </span>
@@ -100,60 +100,7 @@ export default function MetallicPostersHero({
             {title}
           </h1>
         </div>
-
-        {/* Stage — fixed footprint so layout doesn't shift between loading and loaded */}
-        <div className="relative h-[320px] sm:h-[420px] md:h-[480px] flex items-center justify-center">
-          <AnimatePresence>
-            {!ready && (
-              <motion.div
-                key="loader"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.3 }}
-                className="absolute inset-0 flex flex-col items-center justify-center gap-4"
-              >
-                <LoadCropSpinner />
-                <span className="font-mono text-[11px] uppercase tracking-widest text-z-muted">
-                  Loading metallic posters
-                </span>
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          {resolved && (
-            <div className="relative w-full h-full flex items-center justify-center">
-             
-            
-              {/* Magnetic "snap" glow behind the poster */}
-              <motion.div
-                initial="hidden"
-                animate={ready ? 'show' : 'hidden'}
-                variants={glowVariants}
-                className="absolute w-[38%] sm:w-[32%] aspect-[3/4] bg-z-border rounded-full blur-2xl"
-                aria-hidden="true"
-              />
-
-              <motion.div
-                initial="hidden"
-                animate={ready ? 'show' : 'hidden'}
-                variants={posterVariants}
-                className="relative w-[42%] sm:w-[34%] aspect-[3/4] z-20 border-2 border-z-border bg-z-paper "
-              >
-                <img src={resolved} alt="Metallic poster" className="w-full h-full object-cover" />
-              </motion.div>
-            </div>
-          )}
-        </div>
-
-        <motion.p
-          initial="hidden"
-          animate={ready ? 'show' : 'hidden'}
-          variants={copyVariants}
-          className="font-mono text-sm text-z-muted text-center max-w-[52ch] mx-auto mt-14 leading-7"
-        >
-          {subtitle}
-        </motion.p>
+        
       </div>
     </section>
   );

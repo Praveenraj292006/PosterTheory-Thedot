@@ -6,9 +6,9 @@ import ProductCard from '../components/ProductCard';
 import SplitPostersHero, { type SplitPosterImages } from '../components/SplitHero';
 
 import Customize from '../components/Customize';
-import left from '../assets/Split-poster/porche-left.png'
-import mid from '../assets/Split-poster/porche-mid.png'
-import right from '../assets/Split-poster/porche-right.png'
+import left from '../assets/Split-poster/Split1.png'
+import mid from '../assets/Split-poster/Split2.png'
+import right from '../assets/Split-poster/Split3.png'
 
 interface Product {
   id: number;

@@ -297,8 +297,7 @@ const initDB = async () => {
         UNIQUE(material)
       );
 
-      INSERT INTO material_pricing (material, extra_price) VALUES ('PAPER', 0), ('METALLIC SHEET', 50)
-      ON CONFLICT (material) DO NOTHING;
+      
     `);
 
     client.release();
