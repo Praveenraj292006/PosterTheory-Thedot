@@ -238,7 +238,7 @@ const PosterPiece: React.FC<PosterPieceProps> = ({
 
 const PosterCollage: React.FC<PosterCollageProps> = ({
   images,
-  posterCount = 20,
+  posterCount = 40,
 }) => {
   const [mouse, setMouse] = useState({
     x: 0,

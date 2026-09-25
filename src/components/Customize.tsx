@@ -5,7 +5,7 @@ import { motion } from "motion/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import GlitchText from "./GlitchText";
-import GlitchOverlay from "./GlitchOverlay";
+import GlitchOverlay from "./Glitchoverlay";
 
 gsap.registerPlugin(ScrollTrigger);
 

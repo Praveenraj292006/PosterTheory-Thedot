@@ -11,6 +11,7 @@ import { useCanvasEditor } from '../hooks/useCanvasEditor';
 import { useCustomizeConfig } from '../hooks/useCustomizeConfig';
 import type { MetallicThickness } from '../config/paperSizes';
 
+
 const TUTORIAL_STEPS = [
   { title: 'Add Image', desc: 'Click "ADD IMAGE" to create a new page for your print.' },
   { title: 'Choose Settings', desc: 'Select paper size, orientation, and print style from the left panel.' },
